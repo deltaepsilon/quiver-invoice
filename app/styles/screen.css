@@ -6320,8 +6320,8 @@ hr {
 
 /* line 82, modules/_global.scss */
 .padded-row {
-  margin-left: 1rem;
-  margin-right: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 /* line 87, modules/_global.scss */
@@ -6333,18 +6333,17 @@ hr {
 
 /* line 1, modules/_nav.scss */
 .top-bar {
-  padding: 0 1em;
   margin-bottom: 2em;
 }
-/* line 5, modules/_nav.scss */
+/* line 4, modules/_nav.scss */
 .top-bar a, .top-bar a:visited {
   text-decoration: none;
 }
-/* line 11, modules/_nav.scss */
+/* line 10, modules/_nav.scss */
 .top-bar a:hover {
   text-decoration: underline;
 }
-/* line 15, modules/_nav.scss */
+/* line 14, modules/_nav.scss */
 .top-bar li {
   float: left;
   margin: 0 1em;
