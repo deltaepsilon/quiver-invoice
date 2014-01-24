@@ -22,7 +22,12 @@ angular.module('quiverInvoiceApp', [
 
     var nav = {
       templateUrl: 'views/nav.html',
-      controller: 'NavCtrl'
+      controller: 'NavCtrl',
+      resolve: {
+        user: function (userService) {
+          return userService.get();
+        }
+      }
     };
 
     $stateProvider
@@ -36,12 +41,32 @@ angular.module('quiverInvoiceApp', [
           }
         }
       })
+      .state('dashboard', {
+        url: '/dashboard',
+        views: {
+          nav: nav,
+          body: {
+            templateUrl: 'views/dashboard.html',
+            controller: 'DashboardCtrl'
+          }
+        }
+      })
       .state('login', {
         url: '/login',
         views: {
           nav: nav,
           body: {
             templateUrl: 'views/login.html',
+            controller: 'LoginCtrl'
+          }
+        }
+      })
+      .state('settings', {
+        url: '/settings',
+        views: {
+          nav: nav,
+          body: {
+            templateUrl: 'views/settings.html',
             controller: 'LoginCtrl'
           }
         }

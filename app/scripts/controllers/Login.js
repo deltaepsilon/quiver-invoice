@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('LoginCtrl', function ($scope, userService, notificationService) {
+  .controller('LoginCtrl', function ($scope, userService, notificationService, $state) {
     var MESSAGE_REGEX = /FirebaseSimpleLogin: /,
       cleanMessage = function (message) {
         return message.replace(MESSAGE_REGEX, '');
@@ -11,6 +11,7 @@ angular.module('quiverInvoiceApp')
       var promise = userService.logIn(user);
 
       promise.then(function (res) {
+        $state.go('dashboard');
         notificationService.success('Login', 'Log in success!');
       }, function (err) {
         notificationService.error('Login', cleanMessage(err.message));

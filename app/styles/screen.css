@@ -4345,9 +4345,9 @@ th.hide-for-touch {
  * MIT License
  */
 @font-face {
-  font-family: "./foundation-icons";
-  src: url("./foundation-icons.eot");
-  src: url("./foundation-icons.eot?#iefix") format("embedded-opentype"), url("./foundation-icons.woff") format("woff"), url("./foundation-icons.ttf") format("truetype"), url("./foundation-icons.svg#fontcustom") format("svg");
+  font-family: "foundation-icons";
+  src: url("/lib/foundation-icon-fonts/foundation-icons.eot");
+  src: url("/lib/foundation-icon-fonts/foundation-icons.eot?#iefix") format("embedded-opentype"), url("/lib/foundation-icon-fonts/foundation-icons.woff") format("woff"), url("/lib/foundation-icon-fonts/foundation-icons.ttf") format("truetype"), url("/lib/foundation-icon-fonts/foundation-icons.svg#fontcustom") format("svg");
   font-weight: normal;
   font-style: normal;
 }

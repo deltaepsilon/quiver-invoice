@@ -14,6 +14,14 @@ angular.module('quiverInvoiceApp')
           }
         }
       },
+      envDependentFunction = function (action) {
+        var deferred = $q.defer(),
+          handler = new Handler(deferred);
+        env.then(function (env) {
+          action(handler);
+        });
+        return deferred.promise;
+      },
       firebase,
       firebaseSimpleLogin;
 
@@ -25,21 +33,15 @@ angular.module('quiverInvoiceApp')
 
     return {
       get: function () {
-        var deferred = $q.defer(),
-          handler = new Handler(deferred);
-        env.then(function (env) {
+        return envDependentFunction(function (handler) {
           firebaseSimpleLogin.$getCurrentUser().then(handler.resolve, handler.reject);
         });
-        return deferred.promise;
       },
 
       create: function (user) {
-        var deferred = $q.defer(),
-          handler = new Handler(deferred);
-        env.then(function (env) {
+        return envDependentFunction(function (handler) {
           firebaseSimpleLogin.$createUser(user.email, user.password).then(handler.resolve, handler.reject);
         });
-        return deferred.promise;
       },
 
       remove: function () {
@@ -66,15 +68,18 @@ angular.module('quiverInvoiceApp')
       },
 
       logIn: function (user) {
-        var deferred = $q.defer(),
-          handler = new Handler(deferred);
-
-        env.then(function (env) {
+        return envDependentFunction(function (handler) {
           user.rememberMe = true; // Override default session length (browser session) to be 30 days.
           firebaseSimpleLogin.$login('password', user).then(handler.resolve, handler.reject);
         });
+      },
 
-        return deferred.promise;
+      logOut: function () {
+        return envDependentFunction(function (handler) {
+          var res = firebaseSimpleLogin.$logout();
+          return handler.resolve(res);
+        });
       }
+
     }
   });

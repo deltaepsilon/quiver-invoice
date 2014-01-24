@@ -5,8 +5,17 @@
         </a>
     </li>
     <li class="login right">
-        <a ui-sref="login">
+        <a ui-sref="login" ng-hide="user" rel="nofollow">
             Log In
+        </a>
+
+        <a ng-click="logOut()" ng-show="user" rel="nofollow">
+            Log Out
+        </a>
+    </li>
+    <li class="settings right" ng-show="user">
+        <a ui-sref="settings" rel="nofollow">
+            <div class="fi-widget"></div>
         </a>
     </li>
 </ul>
