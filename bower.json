@@ -2,7 +2,6 @@
   "name": "quiverInvoice",
   "version": "0.0.0",
   "dependencies": {
-    "angular": "~1.0.7",
     "json3": "~3.2.4",
     "es5-shim": "~2.0.8",
     "angular-sanitize": "~1.0.7",
@@ -15,15 +14,17 @@
     "foundation-icon-fonts": "*",
     "angular-ui-router": "~0.2.8",
     "angularfire": "~0.6.0",
-    "firebase": "~1.0.2"
+    "firebase": "~1.0.2",
+    "angular": "~1.2.9",
+    "angular-notifications": "git@github.com:deltaepsilon/angular-notifications.git#master"
   },
   "devDependencies": {
     "angular-mocks": "~1.0.7",
     "angular-scenario": "~1.0.7"
   },
   "resolutions": {
-    "angular-mocks": "~1.2.0",
-    "angular": "1.0.8",
-    "angular-scenario": "~1.0.7"
+    "angular-mocks": "~1.2.9",
+    "angular": "1.2.10-build.2178+sha.40dc806",
+    "angular-scenario": "~1.2.9"
   }
 }

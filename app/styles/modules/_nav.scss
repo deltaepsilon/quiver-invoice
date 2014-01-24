@@ -1,0 +1,20 @@
+.top-bar {
+  padding: 0 1em;
+  margin-bottom: 2em;
+
+  a, a:visited {
+    @extend .text-white;
+
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  li {
+    float: left;
+    margin: 0 1em;
+  }
+
+}

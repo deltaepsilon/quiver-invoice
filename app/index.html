@@ -12,7 +12,7 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
         <!-- build:css(.tmp) styles/main.css -->
-        <link rel="stylesheet" href="styles/main.css">
+        <link rel="stylesheet" href="styles/screen.css">
         <!-- endbuild -->
 </head>
   <body ng-app="quiverInvoiceApp">
@@ -26,7 +26,11 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container" ui-view="body"></div>
+    <div class="container">
+        <nav class="top-bar" ui-view="nav"></nav>
+        <div ui-view="body"></div>
+    </div>
+    <div notifications="bottom right"></div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
      <script>
@@ -40,9 +44,10 @@
     </script>
 
 
-    <script src="lib/angular/angular.js"></script>
+
 
         <!-- build:js scripts/modules.js -->
+        <script src="lib/angular/angular.js"></script>
         <script src="lib/angular-sanitize/angular-sanitize.js"></script>
         <script src="lib/angular-cache/dist/angular-cache.js"></script>
         <script src="lib/angular-google-analytics/src/angular-google-analytics.js"></script>
@@ -53,12 +58,20 @@
         <script src="lib/momentjs/moment.js"></script>
         <script src="lib/restangular/dist/restangular.js"></script>
         <script src="lib/firebase/firebase.js"></script>
+        <script type='text/javascript' src='https://cdn.firebase.com/js/simple-login/1.2.1/firebase-simple-login.js'></script>
         <script src="lib/angularfire/angularfire.js"></script>
+        <script src="lib/angular-notifications/notification.js"></script>
         <!-- endbuild -->
 
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
         <script src="scripts/app.js"></script>
         <script src="scripts/controllers/main.js"></script>
+        <script src="scripts/controllers/Nav.js"></script>
+        <script src="scripts/controllers/Login.js"></script>
+        <script src="scripts/services/environmentService.js"></script>
+        <script src="scripts/services/userService.js"></script>
+        <script src="scripts/services/cacheService.js"></script>
+        <script src="scripts/services/notificationService.js"></script>
         <!-- endbuild -->
 </body>
 </html>

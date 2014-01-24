@@ -1,0 +1,70 @@
+.dr-notification-container {
+  position: fixed;
+  top: initial;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  text-align: center;
+  z-index: 10000;
+
+  .dr-notification-wrapper {
+    @extend .background-white;
+
+    border-color: transparent;
+
+    border-style: solid;
+    border-width: 5px 5px 0 0;
+    //display: inline-block; //This will center the boxes
+    display: table-cell;
+    margin: 0 30px;
+    padding: 0px 25px 5px;
+    position: relative;
+    text-align: left;
+
+  }
+
+  .dr-notification-close-btn {
+    @include absolute(0, 0, 0, 10px);
+
+    cursor: pointer;
+
+    &:before {
+      @extend .text-gray3;
+      @extend .text-x-small;
+      @include absolute(0, initial, initial, 0);
+
+      content: 'x';
+      font-weight: 500;
+    }
+  }
+
+  .dr-notification-title {
+    @extend .text-medium;
+  }
+
+  .dr-notification-text {
+    margin: 5px 0 10px;
+  }
+
+  @mixin notification($color) {
+    border-color: getColor($color);
+
+    .dr-notification-title {
+      color: getColor($color);
+    }
+  }
+
+  .notify {
+    @include notification(gray2);
+  }
+  .error {
+    @include notification(red1);
+  }
+  .warning {
+    @include notification(green1);
+  }
+  .success {
+    @include notification(green2);
+  }
+}

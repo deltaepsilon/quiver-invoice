@@ -1,0 +1,29 @@
+<h1 class="padded-row text-center">Log In</h1>
+
+<div class="centered">
+    <form action name="loginForm">
+        <div class="row">
+            <div class="large-12">
+                <label for="user-email">Email</label>
+                <input id="user-email" type="email" ng-model="user.email" required/>
+            </div>
+            <div class="large-12">
+                <label for="user-password">Password</label>
+                <input id="user-password" type="password" ng-model="user.password"/>
+            </div>
+        </div>
+
+        <ul class="inline-list">
+            <li>
+                <button class="button" ng-click="logIn(user)" ng-disabled="loginForm.$invalid || !user.password">Log In</button>
+            </li>
+            <li>
+                <button class="button" ng-click="create(user)" ng-disabled="loginForm.$invalid || !user.password">Create User</button>
+            </li>
+            <li>
+                <button class="button secondary" ng-click="resetPassword(user)" ng-disabled="loginForm.$invalid">Reset Password</button>
+            </li>
+        </ul>
+
+    </form>
+</div>

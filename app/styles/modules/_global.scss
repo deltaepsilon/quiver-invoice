@@ -1,0 +1,91 @@
+$medium-display-min: 641px;
+$large-display-min: 1024px;
+$x-large-display-min: 1441px;
+$xx-large-display-min: 1920px;
+
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+// Roboto
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,700,500italic,700italic,900,900italic);
+
+// Roboto Slab
+@import url(https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700);
+
+// Roboto Condensed
+@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:300italic,400italic,700italic,400,300,700);
+
+body {
+  @extend .text-gray-3;
+
+  font-family: "Roboto";
+}
+
+.header {
+  font-family: "Roboto Slab";
+  font-weight: 300;
+  line-height: 1.2em;
+  margin-bottom: 1em;
+
+  strong {
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+}
+
+h1 {
+  @extend .header;
+  @extend .text-large;
+}
+
+h2 {
+  @extend .header;
+  @extend .text-large;
+}
+
+h3 {
+  @extend .header;
+  @extend .text-x-medium;
+}
+
+h4 {
+  @extend .header;
+  @extend .text-medium;
+}
+
+h5 {
+  @extend .header;
+  @extend .text-small;
+}
+
+h6 {
+  @extend .header;
+  @extend .text-x-small;
+}
+
+p {
+  font-weight: 200;
+  letter-spacing: 1px;
+  line-height: 1.2em;
+}
+
+hr {
+  border-color: getColor(gray3);
+  border-width: 1px 0 0 0;
+  margin: 2rem 0;
+
+}
+
+.padded-row {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.centered {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: $medium-display-min;
+}

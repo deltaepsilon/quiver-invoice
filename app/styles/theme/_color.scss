@@ -1,0 +1,40 @@
+$colors:
+  green1 #98CCB6,
+  green2 #177F62,
+  gray0 #e7e8e9,
+  gray1 #F2F2F2,
+  gray2 #DDD,
+  gray3 #414141,
+  gray4 #999,
+  red1 #bd3f42,
+
+  gray #333,
+  white #fff,
+  black #000;
+
+// Background colors class names.
+@each $color in $colors {
+  .background-#{nth($color, 1)} {
+    background-color : nth($color, 2);
+  }
+}
+
+// Text colors.
+@each $color in $colors {
+  .text-#{nth($color, 1)} {
+    color : nth($color, 2);
+  }
+}
+
+@function getValueByKey($map, $key) {
+  @each $index in $map {
+    @if nth($index, 1) == $key {
+      @return nth($index, 2);
+    }
+  }
+}
+
+// Get a color by it name on the colors list.
+@function getColor($colorName) {
+  @return getValueByKey($colors, $colorName);
+}
