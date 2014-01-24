@@ -20,10 +20,10 @@ angular.module('quiverInvoiceApp')
       }
     };
 
-    service.info('Notification', 'This is an info message');
-    service.warning('Notification', 'This is an warning message');
-    service.error('Notification', 'This is an error message');
-    service.success('Notification', 'This is an success message');
+//    service.info('Notification', 'This is an info message');
+//    service.warning('Notification', 'This is an warning message');
+//    service.error('Notification', 'This is an error message');
+//    service.success('Notification', 'This is an success message');
 
     return service;
   });
