@@ -7,16 +7,16 @@ angular.module('quiverInvoiceApp')
 
     var service = {
       info: function (title, content, userData) {
-        $notification.notify(null, title, content, userData, 'notify');
+        return $notification.notify(null, title, content, userData, 'notify');
       },
       error: function (title, content, userData) {
-        $notification.notify(null, title, content, userData, 'error');
+        return $notification.notify(null, title, content, userData, 'error');
       },
       success: function (title, content, userData) {
-        $notification.notify(null, title, content, userData, 'success');
+        return $notification.notify(null, title, content, userData, 'success');
       },
       warning: function (title, content, userData) {
-        $notification.notify(null, title, content, userData, 'warning');
+        return $notification.notify(null, title, content, userData, 'warning');
       }
     };
 

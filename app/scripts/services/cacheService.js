@@ -12,7 +12,7 @@ angular.module('quiverInvoiceApp')
 
     return {
       config: function (provider) {
-        provider.setDefaultHttpFields({cache: qvCache});
+        return provider.setDefaultHttpFields({cache: qvCache});
       },
 
       get: function () {
