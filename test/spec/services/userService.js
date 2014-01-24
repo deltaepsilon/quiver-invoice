@@ -1,18 +1,18 @@
 'use strict';
 
-describe('Service: Userservice', function () {
+describe('Service: userService', function () {
 
   // load the service's module
-  beforeEach(module('QuiverinvoiceApp'));
+  beforeEach(module('quiverInvoiceApp'));
 
   // instantiate service
-  var Userservice;
-  beforeEach(inject(function (_Userservice_) {
-    Userservice = _Userservice_;
+  var userService;
+  beforeEach(inject(function (_userService_) {
+    userService = _userService_;
   }));
 
   it('should do something', function () {
-    expect(!!Userservice).toBe(true);
+    expect(!!userService).toBe(true);
   });
 
 });

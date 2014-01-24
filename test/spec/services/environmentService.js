@@ -1,18 +1,18 @@
 'use strict';
 
-describe('Service: Environmentservice', function () {
+describe('Service: environmentService', function () {
 
   // load the service's module
-  beforeEach(module('QuiverinvoiceApp'));
+  beforeEach(module('quiverInvoiceApp'));
 
   // instantiate service
-  var Environmentservice;
-  beforeEach(inject(function (_Environmentservice_) {
-    Environmentservice = _Environmentservice_;
+  var environmentService;
+  beforeEach(inject(function (_environmentService_) {
+    environmentService = _environmentService_;
   }));
 
   it('should do something', function () {
-    expect(!!Environmentservice).toBe(true);
+    expect(!!environmentService).toBe(true);
   });
 
 });

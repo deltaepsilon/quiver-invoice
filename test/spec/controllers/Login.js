@@ -6,17 +6,60 @@ describe('Controller: LoginCtrl', function () {
   beforeEach(module('quiverInvoiceApp'));
 
   var LoginCtrl,
-    scope;
+    scope,
+    q,
+    generic = function () {
+      var deferred = q.defer();
+      deferred.resolve(arguments);
+      return deferred.promise;
+    };
 
   // Initialize the controller and a mock scope
-  beforeEach(inject(function ($controller, $rootScope) {
+  beforeEach(inject(function ($controller, $rootScope, $q) {
+    q = $q;
     scope = $rootScope.$new();
     LoginCtrl = $controller('LoginCtrl', {
-      $scope: scope
+      $scope: scope,
+      userService: {
+        logIn: generic,
+        create: generic,
+        reset: generic
+      },
+      notificationService: {
+        success: generic,
+        error: generic
+      }
     });
   }));
 
-  it('should attach a list of awesomeThings to the scope', function () {
-    expect(scope.awesomeThings.length).toBe(3);
-  });
+
+
+  var user = {email: 'test@quiver.is', password: 'user'};
+
+  it('should call userService.logIn', inject(function ($timeout) {
+    var result;
+    scope.logIn(user).then(function (res) {
+      result = res;
+    });
+    $timeout.flush();
+    expect(result[0]).toEqual(user);
+  }));
+
+  it('should call userService.create', inject(function ($timeout) {
+    var result;
+    scope.create(user).then(function (res) {
+      result = res;
+    });
+    $timeout.flush();
+    expect(result[0]).toEqual(user);
+  }));
+
+  it('should call userService.reset', inject(function ($timeout) {
+    var result;
+    scope.resetPassword(user).then(function (res) {
+      result = res;
+    });
+    $timeout.flush();
+    expect(result[0]).toEqual(user.email);
+  }));
 });

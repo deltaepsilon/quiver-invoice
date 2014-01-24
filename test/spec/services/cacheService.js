@@ -1,18 +1,18 @@
 'use strict';
 
-describe('Service: Cacheservice', function () {
+describe('Service: cacheService', function () {
 
   // load the service's module
-  beforeEach(module('QuiverinvoiceApp'));
+  beforeEach(module('quiverInvoiceApp'));
 
   // instantiate service
-  var Cacheservice;
-  beforeEach(inject(function (_Cacheservice_) {
-    Cacheservice = _Cacheservice_;
+  var cacheService;
+  beforeEach(inject(function (_cacheService_) {
+    cacheService = _cacheService_;
   }));
 
   it('should do something', function () {
-    expect(!!Cacheservice).toBe(true);
+    expect(!!cacheService).toBe(true);
   });
 
 });

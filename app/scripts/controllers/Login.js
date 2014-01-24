@@ -8,26 +8,38 @@ angular.module('quiverInvoiceApp')
       };
 
     $scope.logIn = function (user) {
-      userService.logIn(user).then(function (res) {
+      var promise = userService.logIn(user);
+
+      promise.then(function (res) {
         notificationService.success('Login', 'Log in success!');
       }, function (err) {
         notificationService.error('Login', cleanMessage(err.message));
       });
+
+      return promise;
     };
 
     $scope.create = function (user) {
-      userService.create(user).then(function (res) {
+      var promise = userService.create(user);
+
+      promise.then(function (res) {
         notificationService.success('Login', 'New user created!');
       }, function (err) {
         notificationService.error('Login', cleanMessage(err.message));
       });
+
+      return promise;
     };
 
     $scope.resetPassword = function (user) {
-      userService.reset(user.email).then(function (res) {
+      var promise = userService.reset(user.email);
+
+      promise.then(function (res) {
         notificationService.success('Login', 'Password reset email sent to ' + user.email);
       }, function (err) {
         notificationService.error('Login', cleanMessage(err.message));
       });
+
+      return promise;
     };
   });

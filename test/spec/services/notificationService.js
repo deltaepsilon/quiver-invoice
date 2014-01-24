@@ -1,18 +1,18 @@
 'use strict';
 
-describe('Service: Notificationservice', function () {
+describe('Service: notificationService', function () {
 
   // load the service's module
-  beforeEach(module('QuiverinvoiceApp'));
+  beforeEach(module('quiverInvoiceApp'));
 
   // instantiate service
-  var Notificationservice;
-  beforeEach(inject(function (_Notificationservice_) {
-    Notificationservice = _Notificationservice_;
+  var notificationService;
+  beforeEach(inject(function (_notificationService_) {
+    notificationService = _notificationService_;
   }));
 
   it('should do something', function () {
-    expect(!!Notificationservice).toBe(true);
+    expect(!!notificationService).toBe(true);
   });
 
 });
