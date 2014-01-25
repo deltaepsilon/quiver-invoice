@@ -4,7 +4,6 @@ angular.module('quiverInvoiceApp')
   .controller('NavCtrl', function ($rootScope, $scope, user, userService, $state) {
     var protectedRoutes = ['dashboard', 'settings'];
 
-    console.log('Nav.js user', user);
     $rootScope.user = user;
 
     if ($rootScope.user && $state.current.name === 'root') {

@@ -34,7 +34,14 @@ describe('Service: userService', function () {
       }
     });
 
-    provide.value('$firebase', generic);
+    provide.value('$firebase', function () {
+      return {
+        $child: function () {
+          return '$child'
+        },
+        $save: genericAsync('$save')
+      };
+    });
 
     provide.value('$firebaseSimpleLogin', function (ref) {
       return {
@@ -58,7 +65,7 @@ describe('Service: userService', function () {
       result = res;
     });
     $timeout.flush();
-    expect(result).toBe('$getCurrentUser');
+    expect(result).toBe('$child');
   }));
 
 
@@ -71,7 +78,7 @@ describe('Service: userService', function () {
       result = res;
     });
     $timeout.flush();
-    expect(result).toBe('$createUser');
+    expect(result).toBe('$save');
   }));
 
   it('should call $login for logIn', inject(function ($timeout) {
