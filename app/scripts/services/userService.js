@@ -18,29 +18,37 @@ angular.module('quiverInvoiceApp')
         var deferred = $q.defer(),
           handler = new Handler(deferred);
         env.then(function (env) {
-          action(handler);
+          action(handler, env);
         });
         return deferred.promise;
       },
       firebase,
-      firebaseSimpleLogin;
+      firebaseSimpleLogin,
+      usersRef;
 
     environmentService.get().then(function (env) {
       firebase = new Firebase(env.firebase);
       firebaseSimpleLogin = $firebaseSimpleLogin(firebase);
+      usersRef = $firebase(new Firebase(env.firebase + '/users'));
       envDeferred.resolve(env);
     });
 
     return {
       get: function () {
         return envDependentFunction(function (handler) {
-          firebaseSimpleLogin.$getCurrentUser().then(handler.resolve, handler.reject);
+          firebaseSimpleLogin.$getCurrentUser().then(function (user) {
+            handler.resolve(user ? usersRef.$child(user.id) : null);
+          }, handler.reject);
         });
       },
 
       create: function (user) {
-        return envDependentFunction(function (handler) {
-          firebaseSimpleLogin.$createUser(user.email, user.password).then(handler.resolve, handler.reject);
+        return envDependentFunction(function (handler, env) {
+          firebaseSimpleLogin.$createUser(user.email, user.password).then(function (user) {
+            var userRef = $firebase(new Firebase(env.firebase + '/users/' + user.id));
+            userRef.email = user.email;
+            userRef.$save().then(handler.resolve);
+          }, handler.reject);
         });
       },
 

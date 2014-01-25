@@ -24,6 +24,7 @@ angular.module('quiverInvoiceApp')
       var promise = userService.create(user);
 
       promise.then(function (res) {
+        $state.go('dashboard');
         notificationService.success('Login', 'New user created!');
       }, function (err) {
         notificationService.error('Login', cleanMessage(err.message));

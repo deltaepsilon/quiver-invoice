@@ -6425,3 +6425,8 @@ hr {
 .dr-notification-container .success .dr-notification-title {
   color: #177f62;
 }
+
+/* line 1, modules/_settings.scss */
+#company-address {
+  min-height: 7em;
+}

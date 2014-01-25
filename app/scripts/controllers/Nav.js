@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('NavCtrl', function ($scope, user, userService, $state) {
+  .controller('NavCtrl', function ($rootScope, $scope, user, userService, $state) {
     var protectedRoutes = ['dashboard', 'settings'];
 
-    $scope.user = user;
+    console.log('Nav.js user', user);
+    $rootScope.user = user;
 
-    if ($scope.user && $state.current.name === 'root') {
+    if ($rootScope.user && $state.current.name === 'root') {
       $state.go('dashboard');
     } else if (!user && ~protectedRoutes.indexOf($state.current.name)) {
       $state.go('root');
@@ -14,7 +15,7 @@ angular.module('quiverInvoiceApp')
 
     $scope.logOut = function () {
       userService.logOut().then(userService.get).then(function (user) {
-        $scope.user = user;
+        $rootScope.user = user;
         $state.go('root');
       });
     };

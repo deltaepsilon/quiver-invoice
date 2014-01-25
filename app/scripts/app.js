@@ -67,7 +67,7 @@ angular.module('quiverInvoiceApp', [
           nav: nav,
           body: {
             templateUrl: 'views/settings.html',
-            controller: 'LoginCtrl'
+            controller: 'SettingsCtrl'
           }
         }
       });
