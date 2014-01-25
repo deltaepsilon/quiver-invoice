@@ -40,7 +40,8 @@ describe('Service: userService', function () {
       return {
         $getCurrentUser: genericAsync('$getCurrentUser'),
         $createUser: genericAsync('$createUser'),
-        $login: genericAsync('$login')
+        $login: genericAsync('$login'),
+        $logout: genericAsync('$logout')
       };
     });
   }));
@@ -80,6 +81,15 @@ describe('Service: userService', function () {
     });
     $timeout.flush();
     expect(result).toBe('$login');
+  }));
+
+  it('should call $logout for logOut', inject(function ($timeout) {
+    var result;
+    userService.logOut(user).then(function (res) {
+      result = res;
+    });
+    $timeout.flush();
+    expect(result).toBe('$logout');
   }));
 
 });

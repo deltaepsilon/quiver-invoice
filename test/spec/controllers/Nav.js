@@ -6,17 +6,42 @@ describe('Controller: NavCtrl', function () {
   beforeEach(module('quiverInvoiceApp'));
 
   var NavCtrl,
-    scope;
+    scope,
+    generic = function () {
+      return arguments;
+    },
+    genericAsync;
 
   // Initialize the controller and a mock scope
-  beforeEach(inject(function ($controller, $rootScope) {
+  beforeEach(inject(function ($controller, $rootScope, $q) {
+    genericAsync = function (name) {
+      return function () {
+        var deferred = $q.defer();
+        deferred.resolve(name);
+        return deferred.promise;
+      };
+    };
+
     scope = $rootScope.$new();
     NavCtrl = $controller('NavCtrl', {
-      $scope: scope
+      $scope: scope,
+      user: true,
+      userService: {
+        logOut: genericAsync('logOut'),
+        get: genericAsync('get')
+      },
+      $state: {
+        go: generic,
+        current: {
+          name: 'state name'
+        }
+      }
     });
   }));
 
-  it('should attach a list of awesomeThings to the scope', function () {
-    expect(scope.awesomeThings.length).toBe(3);
-  });
+  it('should call userService.logOut on $scope.logOut', inject(function ($timeout) {
+    scope.logOut();
+    $timeout.flush();
+    expect(scope.user).toBe('get');
+  }));
 });

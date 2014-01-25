@@ -28,6 +28,9 @@ describe('Controller: LoginCtrl', function () {
       notificationService: {
         success: generic,
         error: generic
+      },
+      $state: {
+        go: generic
       }
     });
   }));
