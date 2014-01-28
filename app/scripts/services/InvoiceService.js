@@ -22,7 +22,29 @@ angular.module('quiverInvoiceApp')
         });
         return deferred.promise;
       },
-      invoicesRef;
+      invoicesRef,
+      getNextInvoiceNumber = function () {
+        var increment = function (handler) {
+          if (!invoicesRef.next) {
+            invoicesRef.next = 100;
+          }
+
+          handler.resolve(invoicesRef.next);
+          invoicesRef.next += 1;
+          invoicesRef.$save();
+        };
+
+        return envDependentFunction(function (envHandler) {
+          if (!invoicesRef.next) {
+            invoicesRef.$on('loaded', function () {
+              increment(envHandler);
+            });
+          } else {
+            increment(envHandler);
+          }
+
+        });
+      };
 
     environmentService.get().then(function (env) {
       userService.getCurrentUser().then(function (user) {
@@ -33,6 +55,22 @@ angular.module('quiverInvoiceApp')
     });
 
     var service = {
+      newInvoice: function () {
+        var deferred = $q.defer();
+
+        getNextInvoiceNumber().then(function (next) {
+          deferred.resolve({
+            date: moment().format('YYYY-MM-DD'),
+            number: next,
+            project: null,
+            address: null,
+            items: []
+          });
+        });
+
+        return deferred.promise;
+      },
+
       get: function (id) {
         return envDependentFunction(function (handler) {
           handler.resolve(id ? invoicesRef.$child(id) : invoicesRef);

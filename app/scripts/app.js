@@ -84,13 +84,7 @@ angular.module('quiverInvoiceApp', [
               },
               invoice: function ($stateParams, invoiceService, moment) {
                 if ($stateParams.id === 'new') {
-                  return {
-                    date: moment().format('MM/DD/YYYY'),
-                    number: 100,
-                    project: null,
-                    address: null,
-                    items: []
-                  };
+                  return invoiceService.newInvoice();
                 } else {
                   return invoiceService.get($stateParams.id);
                 }
