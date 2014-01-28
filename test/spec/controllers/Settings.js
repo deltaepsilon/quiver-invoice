@@ -26,10 +26,12 @@ describe('Controller: SettingsCtrl', function () {
     SettingsCtrl = $controller('SettingsCtrl', {
       $scope: scope,
       notificationService: {
-        success: generic,
-        error: generic
+        promiseNotify: function (title, success, failure, action) {
+          return action('promiseNotify');
+        }
       }
     });
+
   }));
 
   it('should be capable of notifying success or error for arbitrary function', function () {
