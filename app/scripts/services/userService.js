@@ -35,9 +35,25 @@ angular.module('quiverInvoiceApp')
 
     return {
       get: function () {
+        return envDependentFunction(function (handler, env) {
+          firebaseSimpleLogin.$getCurrentUser().then(function (user) {
+            handler.resolve(user ? $firebase(new Firebase(env.firebase + '/users/' + user.id)) : null);
+          }, handler.reject);
+        });
+      },
+
+      getRef: function () {
         return envDependentFunction(function (handler) {
           firebaseSimpleLogin.$getCurrentUser().then(function (user) {
             handler.resolve(user ? usersRef.$child(user.id) : null);
+          }, handler.reject);
+        });
+      },
+
+      getCurrentUser: function () {
+        return envDependentFunction(function (handler, env) {
+          firebaseSimpleLogin.$getCurrentUser().then(function (user) {
+            handler.resolve(user);
           }, handler.reject);
         });
       },

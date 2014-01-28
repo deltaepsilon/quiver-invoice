@@ -70,6 +70,35 @@ angular.module('quiverInvoiceApp', [
             controller: 'SettingsCtrl'
           }
         }
+      })
+      .state('invoice', {
+        url: '/invoice/:id',
+        views: {
+          nav: nav,
+          body: {
+            templateUrl: 'views/invoice.html',
+            controller: 'InvoiceCtrl',
+            resolve: {
+              invoices: function (invoiceService) {
+                return invoiceService.get();
+              },
+              invoice: function ($stateParams, invoiceService, moment) {
+                if ($stateParams.id === 'new') {
+                  return {
+                    date: moment().format('MM/DD/YYYY'),
+                    number: 100,
+                    project: null,
+                    address: null,
+                    items: []
+                  };
+                } else {
+                  return invoiceService.get($stateParams.id);
+                }
+
+              }
+            }
+          }
+        }
       });
 
   });

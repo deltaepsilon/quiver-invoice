@@ -1,6 +1,6 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('DashboardCtrl', function ($scope) {
-
+  .factory('_', function Underscore() {
+    return _;
   });

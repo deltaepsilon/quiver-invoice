@@ -3219,6 +3219,49 @@ label.error {
   display: block;
 }
 
+/* line 89, ../lib/foundation/scss/foundation/components/_tables.scss */
+table {
+  background: white;
+  margin-bottom: 1.25rem;
+  border: solid 1px #dddddd;
+}
+/* line 51, ../lib/foundation/scss/foundation/components/_tables.scss */
+table thead,
+table tfoot {
+  background: whitesmoke;
+}
+/* line 56, ../lib/foundation/scss/foundation/components/_tables.scss */
+table thead tr th,
+table thead tr td,
+table tfoot tr th,
+table tfoot tr td {
+  padding: 0.5rem 0.625rem 0.625rem;
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: #222222;
+  text-align: left;
+}
+/* line 68, ../lib/foundation/scss/foundation/components/_tables.scss */
+table tr th,
+table tr td {
+  padding: 0.5625rem 0.625rem;
+  font-size: 0.875rem;
+  color: #222222;
+}
+/* line 76, ../lib/foundation/scss/foundation/components/_tables.scss */
+table tr.even, table tr.alt, table tr:nth-of-type(even) {
+  background: #f9f9f9;
+}
+/* line 83, ../lib/foundation/scss/foundation/components/_tables.scss */
+table thead tr th,
+table tfoot tr th,
+table tbody tr td,
+table tr td,
+table tfoot tr td {
+  display: table-cell;
+  line-height: 1.125rem;
+}
+
 /* line 77, ../lib/foundation/scss/foundation/components/_top-bar.scss */
 meta.foundation-mq-topbar {
   font-family: "/only screen and (min-width:40.063em)/";
@@ -6108,7 +6151,7 @@ th.hide-for-touch {
 }
 
 /* line 17, theme/_color.scss */
-.background-white, .dr-notification-container .dr-notification-wrapper {
+.background-white, .dr-notification-container .dr-notification-wrapper, .invoice-items .new-item-row {
   background-color: white;
 }
 
@@ -6429,4 +6472,13 @@ hr {
 /* line 1, modules/_settings.scss */
 #company-address {
   min-height: 7em;
+}
+
+/* line 5, modules/_invoice.scss */
+.invoice-items .button {
+  width: 100%;
+}
+/* line 17, modules/_invoice.scss */
+.invoice-items .new-item-row {
+  border-top: 1px solid #f2f2f2;
 }
