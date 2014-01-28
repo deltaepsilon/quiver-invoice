@@ -42,7 +42,9 @@ angular.module('quiverInvoiceApp')
 
 //    Invoices
     $scope.invoices = invoices;
-    $scope.invoices.$bind($scope, 'invoices');
+    if ($scope.invoices.$bind) {
+      $scope.invoices.$bind($scope, 'invoices');
+    }
 
 //    Invoice
     $scope.invoice = invoice;

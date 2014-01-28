@@ -62,10 +62,10 @@ describe('Service: userService', function () {
   it('should call $getCurrentUser for get', inject(function ($timeout) {
     var result;
     userService.get().then(function (res) {
-      result = res;
+      result = Object.keys(res);
     });
     $timeout.flush();
-    expect(result).toBe('$child');
+    expect(result).toEqual(['$child', '$save']);
   }));
 
 
@@ -78,7 +78,7 @@ describe('Service: userService', function () {
       result = res;
     });
     $timeout.flush();
-    expect(result).toBe('$save');
+    expect(result).toEqual('$save');
   }));
 
   it('should call $login for logIn', inject(function ($timeout) {

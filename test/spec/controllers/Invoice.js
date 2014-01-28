@@ -12,7 +12,9 @@ describe('Controller: InvoiceCtrl', function () {
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
     InvoiceCtrl = $controller('InvoiceCtrl', {
-      $scope: scope
+      $scope: scope,
+      invoice: {},
+      invoices: {}
     });
   }));
 
