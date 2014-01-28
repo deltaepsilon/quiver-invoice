@@ -47,7 +47,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="(id, invoice) in user.invoices">
+        <tr ng-repeat="(id, invoice) in user.invoices" ng-hide="id == 'next'">
             <td>{{ invoice.date | date }}</td>
             <td>{{ invoice.project }}</td>
             <td>{{ invoice.number }}</td>

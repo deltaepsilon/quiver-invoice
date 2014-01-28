@@ -66,8 +66,12 @@ angular.module('quiverInvoiceApp')
       if (typeof unbind === 'function') {
         unbind();
       }
-      $scope.invoice.$off('loaded');
-      $scope.invoice.$off('change');
+
+      if ($scope.invoice.$off) {
+        $scope.invoice.$off('loaded');
+        $scope.invoice.$off('change');
+      }
+
       return invoiceService.remove(id);
     };
 
