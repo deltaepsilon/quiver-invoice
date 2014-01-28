@@ -58,6 +58,7 @@ angular.module('quiverInvoiceApp')
 
 
 //    Scope functions
+    $scope.indexItems = indexItems; // Attaching for testing purposes
     $scope.calculateTotal = calculateTotal;
     $scope.create = invoiceService.create;
 
@@ -83,6 +84,8 @@ angular.module('quiverInvoiceApp')
 
     $scope.removeItem = function (item) {
       var i = $scope.invoice.items.length;
+
+      indexItems(); // Just in case the IDs have magically not been assigned yet...
 
       while (i--) {
         if ($scope.invoice.items[i].id === item.id) {
