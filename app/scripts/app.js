@@ -17,7 +17,7 @@ angular.module('quiverInvoiceApp', [
   .config(function ($stateProvider, $urlRouterProvider, RestangularProvider) {
     restangularProvider = RestangularProvider;
 
-    RestangularProvider.setBaseUrl('/');
+    RestangularProvider.setBaseUrl(window.env.api);
     $urlRouterProvider.otherwise('/');
 
     var nav = {
@@ -26,6 +26,9 @@ angular.module('quiverInvoiceApp', [
       resolve: {
         user: function (userService) {
           return userService.get();
+        },
+        loggedInUser: function (userService) {
+          return userService.getLoggedInUser();
         }
       }
     };

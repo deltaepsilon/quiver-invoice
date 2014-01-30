@@ -26,11 +26,7 @@ angular.module('quiverInvoiceApp')
       }
     },
     save = function (invoice) {
-      if (invoice.$bind) {
-        return invoice.$save();
-      } else {
-        calculateTotal();
-      }
+      return invoice.$save ? invoice.$save() : calculateTotal();
     },
     unbind;
 
@@ -60,7 +56,9 @@ angular.module('quiverInvoiceApp')
 //    Scope functions
     $scope.indexItems = indexItems; // Attaching for testing purposes
     $scope.calculateTotal = calculateTotal;
+    $scope.save = save;
     $scope.create = invoiceService.create;
+    $scope.send = invoiceService.send;
 
     $scope.remove = function (id) {
       if (typeof unbind === 'function') {

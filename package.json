@@ -4,7 +4,8 @@
   "dependencies": {
     "grunt-s3": "~0.2.0-alpha.3",
     "express": "~3.4.8",
-    "newrelic": "~1.2.0"
+    "newrelic": "~1.2.0",
+    "firebase": "~1.0.2"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
