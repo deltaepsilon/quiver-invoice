@@ -4,4 +4,4 @@ dist
 .sass-cache
 app/lib
 .idea
-*env.json
+*env.js
