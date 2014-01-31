@@ -72,7 +72,14 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
 
   // Get email template
   Q.all([deferredUser.promise, deferredInvoice.promise]).spread(function (user, invoice) {
-    res.render('invoice-recipient-email.txt', {root: env.app, user: user, invoice: invoice, params: req.params }, function (err, html) {
+    var data = {
+      root: env.app,
+      user: user,
+      invoice: invoice,
+      params: req.params
+    };
+
+    res.render('invoice-recipient-email.txt', data, function (err, html) {
       if (err) {
         deferredTemplate.reject(err);
       } else {
@@ -84,7 +91,6 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
 
   // Send email. See https://mandrillapp.com/api/docs/messages.JSON.html
   Q.all([deferredUser.promise, deferredInvoice.promise, deferredTemplate.promise]).spread(function (user, invoice, template) {
-    console.log('here');
     var payload = {
       message: {
         text: template,

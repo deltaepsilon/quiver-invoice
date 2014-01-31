@@ -4,26 +4,30 @@ angular.module('quiverInvoiceApp')
   .service('invoiceService', function invoiceService($q, $firebase, environmentService, userService, notificationService, $state, Restangular) {
     var env = environmentService.get(),
       getNextInvoiceNumber = function () {
-        var increment = function (handler) {
+        var deferred = $q.defer(),
+          invoicesRef,
+          increment = function () {
           if (!invoicesRef.next) {
             invoicesRef.next = 100;
           }
 
-          handler.resolve(invoicesRef.next);
+          deferred.resolve(invoicesRef.next);
           invoicesRef.next += 1;
           invoicesRef.$save();
         };
 
-        return environmentService.envDependentFunction(function (envHandler) {
+        service.get().then(function (res) {
+          invoicesRef = res;
           if (!invoicesRef.next) {
             invoicesRef.$on('loaded', function () {
-              increment(envHandler);
+              increment();
             });
           } else {
-            increment(envHandler);
+            increment();
           }
-
         });
+
+        return deferred.promise;
       };
 
     var service = {
