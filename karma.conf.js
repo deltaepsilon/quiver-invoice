@@ -11,6 +11,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'app/env.js',
       'app/lib/angular/angular.js',
       'app/lib/angular-mocks/angular-mocks.js',
       'app/lib/angular-sanitize/angular-sanitize.js',

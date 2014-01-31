@@ -2,7 +2,7 @@
 
 angular.module('quiverInvoiceApp')
   .service('invoiceService', function invoiceService($q, $firebase, environmentService, userService, notificationService, $state, Restangular) {
-    var invoicesRef,
+    var env = environmentService.get(),
       getNextInvoiceNumber = function () {
         var increment = function (handler) {
           if (!invoicesRef.next) {
@@ -26,14 +26,6 @@ angular.module('quiverInvoiceApp')
         });
       };
 
-    environmentService.get().then(function (env) {
-      userService.getCurrentUser().then(function (user) {
-        invoicesRef = $firebase(new Firebase(env.firebase + '/users/' + user.id + '/invoices'));
-        environmentService.deferred.resolve(env);
-      });
-
-    });
-
     var service = {
       newInvoice: function () {
         var deferred = $q.defer();
@@ -52,16 +44,18 @@ angular.module('quiverInvoiceApp')
       },
 
       get: function (id) {
-        return environmentService.envDependentFunction(function (handler, env) {
-          userService.getCurrentUser().then(function (user) {
-            var path = env.firebase + '/users/' + user.id + '/invoices';
-            if (id) {
-              path += '/' + id;
+        var deferred = $q.defer();
 
-            }
-            handler.resolve($firebase(new Firebase(path)));
-          });
+        userService.getCurrentUser().then(function (user) {
+          var path = env.firebase + '/users/' + user.id + '/invoices';
+          if (id) {
+            path += '/' + id;
+
+          }
+          deferred.resolve($firebase(new Firebase(path)));
         });
+
+        return deferred.promise;
       },
 
       create: function (invoice, copy) {

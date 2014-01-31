@@ -26,6 +26,7 @@ describe('Controller: NavCtrl', function () {
     NavCtrl = $controller('NavCtrl', {
       $scope: scope,
       user: true,
+      loggedInUser: true,
       userService: {
         logOut: genericAsync('logOut'),
         get: genericAsync('get')

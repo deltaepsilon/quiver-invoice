@@ -17,13 +17,13 @@ describe('Service: environmentService', function () {
 
   // instantiate service
   var environmentService;
-  beforeEach(inject(function (_environmentService_) {
+  beforeEach(inject(function (_environmentService_, $window) {
     environmentService = _environmentService_;
   }));
 
   it('should GET env.json', function () {
 //    expect(environmentService).toEqual({});
-    expect(environmentService.get()).toEqual('env.json');
+    expect(Object.keys(environmentService.get())).toEqual(['environment', 'firebase', 'api']);
   });
 
 });
