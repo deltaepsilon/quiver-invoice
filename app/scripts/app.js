@@ -96,6 +96,27 @@ angular.module('quiverInvoiceApp', [
             }
           }
         }
+      })
+      .state('devMountain', {
+        url: "/hello/:name",
+        views: {
+          nav: nav,
+          body: {
+            template: "<h1>Hello {{ name }}</h1>",
+            controller: function ($scope, user, name) {
+              $scope.user = user;
+              $scope.name = name;
+            },
+            resolve: {
+              user: function (userService) {
+                return userService.get();
+              },
+              name: function ($stateParams) {
+                return $stateParams.name;
+              }
+            }
+          }
+        }
       });
 
   });

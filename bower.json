@@ -15,7 +15,7 @@
     "angularfire": "~0.6.0",
     "firebase": "~1.0.2",
     "angular": "~1.2.9",
-    "angular-notifications": "git@github.com:deltaepsilon/angular-notifications.git#master"
+    "angular-notifications": "~0.1.1"
   },
   "devDependencies": {
     "angular-mocks": "~1.0.7",
@@ -23,7 +23,7 @@
   },
   "resolutions": {
     "angular-mocks": "~1.2.9",
-    "angular": "1.2.10-build.2178+sha.40dc806",
+    "angular": ">= 1.0.8",
     "angular-scenario": "~1.2.9"
   }
 }
