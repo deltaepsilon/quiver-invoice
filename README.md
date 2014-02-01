@@ -21,7 +21,7 @@ quiver-invoice
 }
 ```
 
-6. Copy /app/env.json.dist to /app/env.json and modify values appropriately.
+6. Copy /app/env.js.dist to /app/env.js and modify values appropriately.
 7. If you're going to deploy to Amazon, get an S3 account and add something like the following to your environment, usually by appending to ~/.bash_profile
 
 ```
@@ -32,5 +32,5 @@ export QUIVER_INVOICE_FIREBASE="https://yourfirebase.firebaseIO.com"
 
 ```
 
-8. Run ```grunt server``` to launch a development instance of the application, otherwise, run ```grunt build``` to build or ```grunt deploy``` to build and deploy to Amazon S3.
+8. Run ```grunt server``` to launch a development instance of the application. Otherwise, run ```grunt build``` to build or ```grunt deploy``` to build and deploy to Amazon S3.
 
