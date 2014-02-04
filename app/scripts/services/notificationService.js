@@ -18,8 +18,8 @@ angular.module('quiverInvoiceApp')
       warning: function (title, content, userData) {
         return $notification.notify(null, title, content, userData, 'warning');
       },
-      promiseNotify: function (title, success, failure, action) {
-        var promise = action();
+      promiseNotify: function (title, success, failure, action, args) {
+        var promise = action.apply(this, args);
 
         if (!promise) {
           return console.warn("You've got to return something from the action that you pass in. Dummy.");

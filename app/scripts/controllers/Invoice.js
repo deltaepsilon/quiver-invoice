@@ -58,7 +58,11 @@ angular.module('quiverInvoiceApp')
     $scope.calculateTotal = calculateTotal;
     $scope.save = save;
     $scope.create = invoiceService.create;
-    $scope.send = invoiceService.send;
+    $scope.send = function (loggedInUser, invoiceId) {
+      invoiceService.send(loggedInUser, invoiceId).then(function () {
+        $state.go('dashboard');
+      });
+    };
 
     $scope.remove = function (id) {
       if (typeof unbind === 'function') {

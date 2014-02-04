@@ -1,0 +1,9 @@
+Greetings {{ invoice.name }},
+
+This is a friendly reminder of the invoice that you have received from {{ user.email }}.
+
+You can review and pay your invoice here: {{ root }}/users/{{ params.userId }}/invoices/{{ params.invoiceId }}/pay
+
+Thanks!
+
+Quiver Invoice

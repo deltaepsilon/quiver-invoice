@@ -109,7 +109,7 @@ angular.module('quiverInvoiceApp')
       },
 
       send: function (loggedInUser, invoiceId) {
-        return Restangular.one('user', loggedInUser.id).one('invoice', invoiceId).all('send').post(loggedInUser);
+        return notificationService.promiseNotify('Email', 'Invoice Sent', 'Invoice failed to send', Restangular.one('user', loggedInUser.id).one('invoice', invoiceId).all('send').post, [loggedInUser]);
       }
     };
 

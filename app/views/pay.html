@@ -58,7 +58,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="item-row" ng-repeat="item in invoice.items">
+                    <tr class="item-row" ng-repeat="item in invoice.items track by item.id">
                         <td>{{ item.id }}</td>
                         <td>
                             <input type="text" ng-model="item.name" required/>
@@ -116,10 +116,7 @@
             <button class="button" ng-click="create(invoice)" ng-hide="id">Create</button>
             <button class="button" ng-click="create(invoice, true)" ng-show="id">Copy</button>
             <button class="button" ng-click="remove(id)" ng-show="id">Delete</button>
-            <button class="button" ng-click="send(loggedInUser, id)" ng-show="id" ng-disabled="invoiceForm.$invalid || !invoice.total">
-                <span ng-show="invoice.state == 'created'">Send Invoice</span>
-                <span ng-show="invoice.state == 'sent'">Re-Send Invoice</span>
-            </button>
+            <button class="button" ng-click="send(loggedInUser, id)" ng-show="id" ng-disabled="invoiceForm.$invalid || !invoice.total">Send Invoice</button>
 
         </div>
     </form>

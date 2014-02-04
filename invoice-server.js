@@ -64,7 +64,8 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
          deferredInvoice.reject(err);
        } else {
          invoiceRef.once('value', function (snapshot) {
-           deferredInvoice.resolve(snapshot.val())
+           invoiceRef.child('state').set('sent')
+           deferredInvoice.resolve(snapshot.val());
          });
        }
      });
@@ -73,13 +74,26 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
   // Get email template
   Q.all([deferredUser.promise, deferredInvoice.promise]).spread(function (user, invoice) {
     var data = {
-      root: env.app,
-      user: user,
-      invoice: invoice,
-      params: req.params
-    };
+        root: env.app,
+        user: user,
+        invoice: invoice,
+        params: req.params
+      },
+      template = 'invoice-recipient-email.txt';
 
-    res.render('invoice-recipient-email.txt', data, function (err, html) {
+    switch (invoice.state) {
+      case 'sent':
+        template = 'invoice-recipient-email-reminder.txt';
+        break;
+      case 'paid':
+        return deferredTemplate.reject({error: 'Invoice has already been sent!'});
+        break;
+      default:
+        template = 'invoice-recipient-email.txt';
+        break;
+    }
+
+    res.render(template, data, function (err, html) {
       if (err) {
         deferredTemplate.reject(err);
       } else {
@@ -110,6 +124,10 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
         bcc_address: user.email
       }
     };
+
+    if (invoice.state === 'sent') {
+      payload.message.subject = "Quiver Invoice Reminder from " + user.email;
+    }
 
     mandrill.messages.send(payload, deferredEmail.resolve, deferredEmail.reject);
   }, errorHandler);
