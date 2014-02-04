@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('InvoiceCtrl', function ($scope, invoices, invoice, _, $state, $stateParams, notificationService, invoiceService) {
+  .controller('InvoiceCtrl', function ($scope, invoices, invoice, _, $state, $stateParams, notificationService, invoiceService, $timeout) {
     var indexItems = function () {
       var i = $scope.invoice.items.length;
 
@@ -57,7 +57,10 @@ angular.module('quiverInvoiceApp')
     $scope.indexItems = indexItems; // Attaching for testing purposes
     $scope.calculateTotal = calculateTotal;
     $scope.save = save;
-    $scope.create = invoiceService.create;
+    $scope.create = function (invoice, copy) {
+      invoiceService.create(invoice, copy);
+      $state.go('dashboard');
+    };
     $scope.send = function (loggedInUser, invoiceId) {
       invoiceService.send(loggedInUser, invoiceId).then(function () {
         $state.go('dashboard');
@@ -74,7 +77,10 @@ angular.module('quiverInvoiceApp')
         $scope.invoice.$off('change');
       }
 
-      return invoiceService.remove(id);
+
+      invoiceService.remove(id);
+      $state.go('dashboard');
+
     };
 
     $scope.addItem = function (item) {

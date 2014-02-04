@@ -17,7 +17,26 @@
             </div>
             <div class="large-6 medium-12">
                 <label for="invoice-project">Project</label>
-                <input id="invoice-project" type="text" ng-model="invoice.project" ng-change="invoice.$save()"/>
+                <input id="invoice-project" type="text" ng-model="invoice.project" ng-change="invoice.$save()" placeholder="Project name..."/>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <h2 class="centered">Sender Details</h2>
+
+            <div class="large-6 medium-12">
+                <label for="invoice-sender-name">Name</label>
+                <input id="invoice-sender-name" type="text" ng-model="invoice.sender.name" ng-change="invoice.$save()" placeholder="Sender name..." required/>
+            </div>
+            <div class="large-6 medium-12">
+                <label for="invoice-sender-email">Email</label>
+                <input id="invoice-sender-email" type="email" ng-model="invoice.sender.email" ng-change="invoice.$save()" placeholder="Sender email..." required/>
+            </div>
+            <div class="large-6 medium-12">
+                <label for="invoice-sender-address">Address</label>
+                <textarea id="invoice-sender-address" ng-model="invoice.sender.address" ng-change="invoice.$save()" placeholder="Sender address..."></textarea>
             </div>
         </div>
 
@@ -28,15 +47,15 @@
 
             <div class="large-6 medium-12">
                 <label for="invoice-recipient-name">Name</label>
-                <input id="invoice-recipient-name" type="text" ng-model="invoice.name" ng-change="invoice.$save()" required/>
+                <input id="invoice-recipient-name" type="text" ng-model="invoice.recipient.name" ng-change="invoice.$save()" placeholder="Recipient name..." required/>
             </div>
             <div class="large-6 medium-12">
                 <label for="invoice-recipient-email">Email</label>
-                <input id="invoice-recipient-email" type="email" ng-model="invoice.email" ng-change="invoice.$save()" required/>
+                <input id="invoice-recipient-email" type="email" ng-model="invoice.recipient.email" ng-change="invoice.$save()" placeholder="Recipient email..." required/>
             </div>
             <div class="large-6 medium-12">
                 <label for="invoice-recipient-address">Address</label>
-                <textarea id="invoice-recipient-address" ng-model="invoice.address" ng-change="invoice.$save()"></textarea>
+                <textarea id="invoice-recipient-address" ng-model="invoice.recipient.address" ng-change="invoice.$save()" placeholder="Recipient address..."></textarea>
             </div>
         </div>
 
@@ -120,7 +139,7 @@
                 <span ng-show="invoice.state == 'created'">Send Invoice</span>
                 <span ng-show="invoice.state == 'sent'">Re-Send Invoice</span>
             </button>
-
+            <a ui-sref="pay({userId: loggedInUser.id, invoiceId: id})">View Invoice</a>
         </div>
     </form>
 

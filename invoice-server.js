@@ -13,8 +13,6 @@ var express = require('express'),
     app: process.env.QUIVER_INVOICE_APP
   };
 
-console.log(Mandrill);
-
 firebaseRoot.auth(firebaseSecret);
 
 app.engine('html', engines.handlebars);
@@ -108,25 +106,25 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
     var payload = {
       message: {
         text: template,
-        subject: "You Have Received a Quiver Invoice from " + user.email,
-        from_email: user.email,
-        from_name: user.name,
+        subject: "You Have Received a Quiver Invoice from " + invoice.sender,
+        from_email: invoice.sender.email,
+        from_name: invoice.sender.name,
         to: [
           {
-            email: invoice.email,
-            name: invoice.name,
+            email: invoice.recipient.email,
+            name: invoice.recipient.name,
             type: 'to'
           }
         ],
         headers: {
-          "Reply-To": user.email
+          "Reply-To": invoice.sender.email
         },
         bcc_address: user.email
       }
     };
 
     if (invoice.state === 'sent') {
-      payload.message.subject = "Quiver Invoice Reminder from " + user.email;
+      payload.message.subject = "Quiver Invoice Reminder from " + invoice.sender.email;
     }
 
     mandrill.messages.send(payload, deferredEmail.resolve, deferredEmail.reject);

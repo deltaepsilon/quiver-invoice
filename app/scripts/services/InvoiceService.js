@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .service('invoiceService', function invoiceService($q, $firebase, environmentService, userService, notificationService, $state, Restangular) {
+  .service('invoiceService', function invoiceService($q, $firebase, environmentService, userService, notificationService, $state, Restangular, $rootScope) {
     var env = environmentService.get(),
       getNextInvoiceNumber = function () {
         var deferred = $q.defer(),
@@ -34,17 +34,44 @@ angular.module('quiverInvoiceApp')
       newInvoice: function () {
         var deferred = $q.defer();
 
-        getNextInvoiceNumber().then(function (next) {
-          deferred.resolve({
-            date: moment().format('YYYY-MM-DD'),
-            number: next,
-            project: null,
-            address: null,
-            items: []
+        userService.get().then(function (user) {
+          getNextInvoiceNumber().then(function (next) {
+            user.$on('loaded', function () {
+              var name,
+                email,
+                address;
+
+              if (user.settings && user.settings.company) { // Acts as a null check
+                name = user.settings.company.name;
+                address = user.settings.company.address;
+              }
+
+              if (user.settings && user.settings.contact) { // Acts as a null check
+                email = user.settings.contact.email;
+              }
+
+              deferred.resolve({
+                date: moment().format('YYYY-MM-DD'),
+                number: next,
+                project: null,
+                sender: {
+                  name: name,
+                  email: email,
+                  address: address
+                },
+                recipient: {},
+                items: []
+              });
+            });
+
           });
         });
 
         return deferred.promise;
+      },
+
+      getByUser: function (userId, invoiceId) {
+        return $firebase(new Firebase(env.firebase + '/users/' + userId + '/invoices/' + invoiceId));
       },
 
       get: function (id) {
@@ -65,46 +92,36 @@ angular.module('quiverInvoiceApp')
       create: function (invoice, copy) {
         invoice.state = 'created';
 
-        var deferred = $q.defer(),
-          promise = notificationService.promiseNotify('Invoice', 'Invoice created', 'Invoice creation failed', function () {
-            service.get().then(function (invoicesRef) {
-              if (copy) {
-                getNextInvoiceNumber().then(function (next) {
-                  invoice.number = next;
-                  invoicesRef.$add(invoice).then(deferred.resolve);
-                });
-              } else {
-                invoicesRef.$add(invoice).then(deferred.resolve);
-              }
+        return notificationService.promiseNotify('Invoice', 'Invoice created', 'Invoice creation failed', function () {
+          var deferred = $q.defer();
 
-
-            });
-
-            return deferred.promise;
+          service.get().then(function (invoicesRef) {
+            if (copy) {
+              getNextInvoiceNumber().then(function (next) {
+                invoice.number = next;
+                invoicesRef.$add(invoice).then(deferred.resolve, deferred.reject);
+              });
+            } else {
+              invoicesRef.$add(invoice).then(deferred.resolve, deferred.reject);
+            }
           });
 
-        promise.then(function (res) {
-          $state.go('dashboard');
-        });
 
-        return deferred.promise;
+          return deferred.promise;
+        });
 
       },
 
       remove: function (id) {
-        var deferred = $q.defer(),
-          promise = notificationService.promiseNotify('Invoice', 'Invoice deleted', 'Deletion failed', function () {
-            service.get(id).then(function (invoice) {
-              invoice.$remove().then(deferred.resolve);
-            });
-            return deferred.promise;
+        return notificationService.promiseNotify('Invoice', 'Invoice deleted', 'Deletion failed', function () {
+          var deferred = $q.defer();
+
+          service.get(id).then(function (invoice) {
+            invoice.$remove().then(deferred.resolve, deferred.reject);
+
           });
-
-        promise.then(function () {
-          $state.go('dashboard');
+          return deferred.promise;
         });
-
-        return deferred.promise;
 
       },
 

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .service('notificationService', function notificationService($notification) {
+  .service('notificationService', function notificationService($notification, $timeout, $rootScope) {
 //    $notification.enableHtml5Mode();
     $notification.setSetting('custom', {duration: 4000, enabled: true});
 
@@ -19,7 +19,7 @@ angular.module('quiverInvoiceApp')
         return $notification.notify(null, title, content, userData, 'warning');
       },
       promiseNotify: function (title, success, failure, action, args) {
-        var promise = action.apply(this, args);
+        var promise = action.apply(this, args || []);
 
         if (!promise) {
           return console.warn("You've got to return something from the action that you pass in. Dummy.");

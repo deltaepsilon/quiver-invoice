@@ -4,7 +4,7 @@
 <br>
 
 <div class="padded-row">
-    <h2 class="centered">Invoices</h2>
+    <h2 class="centered">Steps to Make Quiver Invoice Awesome</h2>
     <div class="centered">
         <p>
             Write an invoice creation page. It will let user's create invoices under /users/{ID}/invoices.
@@ -34,7 +34,11 @@
 
 </div>
 
-<table class="centered medium-12">
+<br>
+
+<h2 class="centered">Invoices List</h2>
+
+<table class="centered medium-12" ng-cloak>
     <thead>
         <tr>
             <th>Date</th>
@@ -61,7 +65,9 @@
     </tbody>
     <tfoot>
         <tr>
-            <!--<td>{{ user }}</td>-->
+            <td colspan="7">
+                <a class="right" ui-sref="invoice({id: 'new'})">Create an invoice</a>
+            </td>
         </tr>
     </tfoot>
 </table>
