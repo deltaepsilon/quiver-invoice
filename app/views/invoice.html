@@ -139,7 +139,7 @@
                 <span ng-show="invoice.state == 'created'">Send Invoice</span>
                 <span ng-show="invoice.state == 'sent'">Re-Send Invoice</span>
             </button>
-            <a ui-sref="pay({userId: loggedInUser.id, invoiceId: id})">View Invoice</a>
+            <a ng-show="invoice.state == 'sent'" ui-sref="pay({userId: loggedInUser.id, invoiceId: id})">View Invoice</a>
         </div>
     </form>
 

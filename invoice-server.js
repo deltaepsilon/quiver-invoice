@@ -106,7 +106,7 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
     var payload = {
       message: {
         text: template,
-        subject: "You Have Received a Quiver Invoice from " + invoice.sender,
+        subject: "You Have Received a Quiver Invoice from " + invoice.sender.name,
         from_email: invoice.sender.email,
         from_name: invoice.sender.name,
         to: [
@@ -124,7 +124,7 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
     };
 
     if (invoice.state === 'sent') {
-      payload.message.subject = "Quiver Invoice Reminder from " + invoice.sender.email;
+      payload.message.subject = "Quiver Invoice Reminder from " + invoice.sender.name;
     }
 
     mandrill.messages.send(payload, deferredEmail.resolve, deferredEmail.reject);

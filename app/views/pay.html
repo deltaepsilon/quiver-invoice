@@ -27,25 +27,50 @@
         <hr>
 
         <div class="row">
+            <h2 class="centered">Sender Details</h2>
+
+            <div class="large-6 medium-12">
+                <label for="invoice-sender-name">Name</label>
+                <span id="invoice-sender-name">{{ invoice.sender.name }}</span>
+            </div>
+
+            <br>
+
+            <div class="large-6 medium-12">
+                <label for="invoice-sender-email">Email</label>
+                <span id="invoice-sender-email">{{ invoice.sender.name }}</span>
+            </div>
+
+            <br>
+
+            <div class="large-6 medium-12">
+                <label for="invoice-sender-address">Address</label>
+                <span id="invoice-sender-address">{{ invoice.sender.address }}</span>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
             <h2 class="centered">Recipient Details</h2>
 
             <div class="large-6 medium-12">
                 <label for="invoice-recipient-name">Name</label>
-                <span id="invoice-recipient-name">{{ invoice.name }}</span>
+                <span id="invoice-recipient-name">{{ invoice.recipient.name }}</span>
             </div>
 
             <br>
 
             <div class="large-6 medium-12">
                 <label for="invoice-recipient-email">Email</label>
-                <span id="invoice-recipient-email">{{ invoice.name }}</span>
+                <span id="invoice-recipient-email">{{ invoice.recipient.name }}</span>
             </div>
 
             <br>
 
             <div class="large-6 medium-12">
                 <label for="invoice-recipient-address">Address</label>
-                <span id="invoice-recipient-address">{{ invoice.address }}</span>
+                <span id="invoice-recipient-address">{{ invoice.recipient.address }}</span>
             </div>
         </div>
 
