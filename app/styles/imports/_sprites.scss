@@ -1,0 +1,9 @@
+$sprites:
+  powered-by-stripe;
+
+// Sprites
+@each $sprite in $sprites {
+  .background-#{$sprite} {
+    @include use-sprite($sprite);
+  }
+}

@@ -58,6 +58,8 @@ $fi-path: "/lib/foundation-icon-fonts";
 
 // Imports
 @import "imports/mixins";
+@import "imports/retina-sprites";
+@import "imports/sprites";
 
 // Modules
 @import "modules/global";

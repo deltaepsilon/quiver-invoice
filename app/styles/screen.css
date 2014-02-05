@@ -6186,7 +6186,7 @@ th.hide-for-touch {
 }
 
 /* line 24, theme/_color.scss */
-.text-gray3, .dr-notification-container .dr-notification-close-btn:before {
+.text-gray3, body, .dr-notification-container .dr-notification-close-btn:before {
   color: #414141;
 }
 
@@ -6320,6 +6320,30 @@ th.hide-for-touch {
   -ms-border-radius: 50%;
   -o-border-radius: 50%;
   border-radius: 50%;
+}
+
+/*
+ * Retina Sprites for Compass
+ * by:              Gaya Kessler
+ * last update:     01/14/13
+ *
+ * Usage:
+ * 1. create two folders in your image directory (in this case 'icons' and 'icons-2x').
+ * 2. adjust the foldernames defined below if you use different names.
+ * 3. create sprite images for pixel ratio 1 screens and put them in the first folder.
+ * 4. create sprite images for pixel ratio 2 screens and put them in the second folder, use the same filenames.
+ * 5. use the sprite-image in your Sass/Scss using: '@include use-sprite(<sprite-name>)'
+ */
+/* line 6, imports/_sprites.scss */
+.background-powered-by-stripe {
+  overflow: hidden;
+  display: block;
+  background-repeat: no-repeat;
+  background-image: url('../images/1point5x-s25813fdfea.png');
+  background-size: 119.33333px 26px;
+  background-position: 0 0;
+  height: 26px;
+  width: 119.33333px;
 }
 
 /* line 6, modules/_global.scss */

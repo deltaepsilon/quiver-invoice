@@ -35,6 +35,10 @@
                 <input id="invoice-sender-email" type="email" ng-model="invoice.sender.email" ng-change="invoice.$save()" placeholder="Sender email..." required/>
             </div>
             <div class="large-6 medium-12">
+                <label for="invoice-sender-pk">Stripe Publishable Key</label>
+                <input id="invoice-sender-pk" type="text" ng-model="invoice.sender.pk" ng-change="invoice.$save()" placeholder="Stripe publishable key..." required/>
+            </div>
+            <div class="large-6 medium-12">
                 <label for="invoice-sender-address">Address</label>
                 <textarea id="invoice-sender-address" ng-model="invoice.sender.address" ng-change="invoice.$save()" placeholder="Sender address..."></textarea>
             </div>

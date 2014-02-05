@@ -5,3 +5,4 @@ dist
 app/lib
 .idea
 *env.js
+npm-debug.log

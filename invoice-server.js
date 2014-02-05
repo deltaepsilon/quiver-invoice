@@ -49,7 +49,7 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
       deferredUser.reject(err);
     } else {
       userRef.once('value', function (snapshot) {
-        deferredUser.resolve(snapshot.val())
+        deferredUser.resolve(snapshot.val());
       });
     }
   });
@@ -62,7 +62,7 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
          deferredInvoice.reject(err);
        } else {
          invoiceRef.once('value', function (snapshot) {
-           invoiceRef.child('state').set('sent')
+           invoiceRef.child('state').set('sent');
            deferredInvoice.resolve(snapshot.val());
          });
        }
@@ -135,6 +135,58 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
   }, errorHandler);
 
 
+
+});
+
+app.post('/user/:userId/invoice/:invoiceId/token', function (req, res) {
+  var token = req.body.token,
+    userPath = env.firebase + '/users/' + req.params.userId,
+    invoicePath = userPath + '/invoices/' + req.params.invoiceId,
+    userRef = new Firebase(userPath),
+    invoiceRef = new Firebase(invoicePath),
+    deferredUser = Q.defer(),
+    deferredInvoice = Q.defer(),
+    deferredSave = Q.defer(),
+    errorHandler = function (err) {
+      res.send(500, err);
+    };
+
+  // Get user value
+  userRef.auth(firebaseSecret, function (err, result) {
+    if (err) {
+      deferredUser.reject(err);
+    } else {
+      userRef.once('value', function (snapshot) {
+        deferredUser.resolve(snapshot.val());
+      });
+    }
+  });
+
+  // Get invoice value
+  deferredUser.promise.then(function () {
+    invoiceRef.auth(firebaseSecret, function (err, result) {
+
+      if (err) {
+        deferredInvoice.reject(err);
+      } else {
+        invoiceRef.once('value', function (snapshot) {
+          invoiceRef.child('state').set('credit card');
+          deferredInvoice.resolve(snapshot.val());
+        });
+      }
+    });
+  });
+
+
+  Q.all([deferredUser.promise, deferredInvoice.promise]).spread(function (user, invoice) {
+    invoiceRef.child('sk').set(user.settings.stripe.sk);
+    invoiceRef.child('token').set(token);
+    deferredSave.resolve(token);
+  }, errorHandler);
+
+  deferredSave.promise.then(function (aToken) {
+    res.json(aToken);
+  });
 
 });
 
