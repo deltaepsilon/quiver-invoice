@@ -30,6 +30,52 @@ app.get('/env', function (req, res) {
   res.json(env);
 });
 
+// Generic function to get user and invoice then execute an action
+var getUserAndInvoice = function (res, auth, userId, invoiceId, action, state) {
+  var userPath = env.firebase + '/users/' + userId,
+    invoicePath = userPath + '/invoices/' + invoiceId,
+    userRef = new Firebase(userPath),
+    invoiceRef = new Firebase(invoicePath),
+    deferredUser = Q.defer(),
+    deferredInvoice = Q.defer(),
+    deferredAction = Q.defer(),
+    errorHandler = function (err) {
+      res.send(500, err);
+    };
+
+  // Get user value
+  userRef.auth(auth, function (err, result) {
+    if (err) {
+      deferredUser.reject(err);
+    } else {
+      userRef.once('value', function (snapshot) {
+        deferredUser.resolve(snapshot.val());
+      });
+    }
+  });
+
+  // Get invoice value
+  deferredUser.promise.then(function () {
+    invoiceRef.auth(firebaseSecret, function (err, result) {
+
+      if (err) {
+        deferredInvoice.reject(err);
+      } else {
+        invoiceRef.once('value', function (snapshot) {
+          invoiceRef.child('details').child('state').set(state);
+          deferredInvoice.resolve(snapshot.val());
+        });
+      }
+    });
+  });
+
+  Q.all([deferredUser.promise, deferredInvoice.promise]).spread(function (user, invoice) {
+    action(user, invoice, userRef, invoiceRef, deferredAction);
+  }, errorHandler);
+
+  return deferredAction.promise;
+};
+
 app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
   var firebaseAuthToken = req.body.firebaseAuthToken,
     userPath = env.firebase + '/users/' + req.params.userId,
@@ -141,104 +187,27 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
 
 app.post('/user/:userId/invoice/:invoiceId/token', function (req, res) {
   var token = req.body.token,
-    userPath = env.firebase + '/users/' + req.params.userId,
-    invoicePath = userPath + '/invoices/' + req.params.invoiceId,
-    userRef = new Firebase(userPath),
-    invoiceRef = new Firebase(invoicePath),
-    deferredUser = Q.defer(),
-    deferredInvoice = Q.defer(),
-    deferredSave = Q.defer(),
-    errorHandler = function (err) {
-      res.send(500, err);
-    };
-
-  // Get user value
-  userRef.auth(firebaseSecret, function (err, result) {
-    if (err) {
-      deferredUser.reject(err);
-    } else {
-      userRef.once('value', function (snapshot) {
-        deferredUser.resolve(snapshot.val());
-      });
-    }
-  });
-
-  // Get invoice value
-  deferredUser.promise.then(function () {
-    invoiceRef.auth(firebaseSecret, function (err, result) {
-
-      if (err) {
-        deferredInvoice.reject(err);
-      } else {
-        invoiceRef.once('value', function (snapshot) {
-          invoiceRef.child('details').child('state').set('credit card');
-          deferredInvoice.resolve(snapshot.val());
-        });
-      }
-    });
-  });
-
-
-  Q.all([deferredUser.promise, deferredInvoice.promise]).spread(function (user, invoice) {
+    action = function (user, invoice, userRef, invoiceRef, deferredAction) {
     invoiceRef.child('sk').set(user.settings.stripe.sk);
     invoiceRef.child('details').child('token').set(token);
-    deferredSave.resolve(token);
-  }, errorHandler);
+    deferredAction.resolve(token);
+  };
 
-  deferredSave.promise.then(function (aToken) {
-    res.json(aToken);
+  getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'credit card').then(function (result) {
+    res.json(result);
   });
 
 });
 
 app.delete('/user/:userId/invoice/:invoiceId/token', function (req, res) {
-  var token = req.body.token,
-    userPath = env.firebase + '/users/' + req.params.userId,
-    invoicePath = userPath + '/invoices/' + req.params.invoiceId,
-    userRef = new Firebase(userPath),
-    invoiceRef = new Firebase(invoicePath),
-    deferredUser = Q.defer(),
-    deferredInvoice = Q.defer(),
-    deferredSave = Q.defer(),
-    errorHandler = function (err) {
-      res.send(500, err);
+  var action = function (user, invoice, userRef, invoiceRef, deferredAction) {
+      invoiceRef.child('sk').remove();
+      invoiceRef.child('details').child('token').remove();
+      deferredAction.resolve({});
     };
 
-  // Get user value
-  userRef.auth(firebaseSecret, function (err, result) {
-    if (err) {
-      deferredUser.reject(err);
-    } else {
-      userRef.once('value', function (snapshot) {
-        deferredUser.resolve(snapshot.val());
-      });
-    }
-  });
-
-  // Get invoice value
-  deferredUser.promise.then(function () {
-    invoiceRef.auth(firebaseSecret, function (err, result) {
-
-      if (err) {
-        deferredInvoice.reject(err);
-      } else {
-        invoiceRef.once('value', function (snapshot) {
-          invoiceRef.child('details').child('state').set('sent');
-          deferredInvoice.resolve(snapshot.val());
-        });
-      }
-    });
-  });
-
-
-  Q.all([deferredUser.promise, deferredInvoice.promise]).spread(function (user, invoice) {
-    invoiceRef.child('sk').remove();
-    invoiceRef.child('details').child('token').remove();
-    deferredSave.resolve({});
-  }, errorHandler);
-
-  deferredSave.promise.then(function (aToken) {
-    res.json(aToken);
+  getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'sent').then(function (result) {
+    res.json(result);
   });
 
 });
