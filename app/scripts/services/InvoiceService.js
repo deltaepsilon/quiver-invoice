@@ -100,7 +100,10 @@ angular.module('quiverInvoiceApp')
           service.get().then(function (invoicesRef) {
             if (copy) {
               getNextInvoiceNumber().then(function (next) {
-                invoice.number = next;
+                invoice.details.number = next;
+                delete invoice.charge;
+                delete invoice.sk;
+                delete invoice.details.token;
                 invoicesRef.$add(invoice).then(deferred.resolve, deferred.reject);
               });
             } else {

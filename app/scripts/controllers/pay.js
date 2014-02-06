@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('PayCtrl', function ($scope, invoice, moment, stripeService, notificationService, $stateParams) {
+  .controller('PayCtrl', function ($scope, invoice, moment, stripeService, notificationService, invoiceService, $stateParams) {
     var i = 10,
       year = moment().year(),
       setDefaults = function () {
@@ -65,6 +65,15 @@ angular.module('quiverInvoiceApp')
         setDefaults();
       }, function (res) {
         notificationService.error('Credit Card', res.response.error.message);
+      });
+    };
+
+    $scope.pay = function () {
+      stripeService.pay($stateParams.userId, $stateParams.invoiceId).then(function () {
+        notificationService.success('Payment', 'Payment complete!');
+        $scope.invoice = invoiceService.get($stateParams.invoiceId);
+      }, function (res) {
+        notificationService.error('Payment', res.response.error.message);
       });
     };
 

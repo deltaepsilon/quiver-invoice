@@ -162,14 +162,17 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
 app.post('/user/:userId/invoice/:invoiceId/token', function (req, res) {
   var token = req.body.token,
     action = function (user, invoice, userRef, invoiceRef, deferredAction) {
-    invoiceRef.child('sk').set(user.settings.stripe.sk);
-    invoiceRef.child('details').child('token').set(token);
-    deferredAction.resolve(token);
-  };
+      invoiceRef.child('sk').set(user.settings.stripe.sk);
+      invoiceRef.child('details').child('token').set(token);
+      deferredAction.resolve(token);
+    },
+    errorHandler = function (err) {
+      res.send(500, err);
+    };
 
   getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'credit card').then(function (result) {
     res.json(result);
-  });
+  }, errorHandler);
 
 });
 
@@ -183,6 +186,34 @@ app.delete('/user/:userId/invoice/:invoiceId/token', function (req, res) {
   getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'sent').then(function (result) {
     res.json(result);
   });
+
+});
+
+app.post('/user/:userId/invoice/:invoiceId/pay', function (req, res) {
+  var action = function (user, invoice, userRef, invoiceRef, deferredAction) {
+      var stripe = require('stripe')(invoice.sk),
+        payload = {
+          amount: invoice.details.total * 100,
+          currency: 'usd',
+          card: invoice.details.token.id,
+          description: 'Invoice #' + invoice.details.number + ', sent to ' + invoice.details.recipient.email
+        };
+
+      console.log('payload', payload);
+      console.log('sk', invoice.sk);
+      stripe.charges.create(payload).then(function (charge) {
+        console.log('charge', charge);
+        invoiceRef.child('charge').set(charge);
+        deferredAction.resolve(charge);
+      }, deferredAction.reject);
+    },
+    errorHandler = function (err) {
+      res.send(500, err);
+    };
+
+  getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'paid').then(function (result) {
+    res.json(result);
+  }, errorHandler);
 
 });
 

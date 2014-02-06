@@ -65,7 +65,7 @@
 
         <hr>
 
-        <div class="row">
+        <div class="row" ng-hide="invoice.details.token">
             <h2>Itemized Invoice</h2>
 
             <table class="invoice-items medium-12">
@@ -99,7 +99,7 @@
                             <span class="item-amount">{{ item.quantity * item.rate | currency}}</span>
                         </td>
                         <td>
-                            <button class="button tiny" ng-click="removeItem(item)">Remove</button>
+                            <button class="button tiny alert" ng-click="removeItem(item)">Remove</button>
                         </td>
                     </tr>
                     <tr class="new-item-row item-row">
@@ -134,17 +134,86 @@
                     </tr>
                 </tfoot>
             </table>
+
+
         </div>
-        <div class="row">
+        <div class="row" ng-hide="invoice.details.state == 'paid'">
             <button class="button" ng-click="create(invoice)" ng-hide="id">Create</button>
             <button class="button" ng-click="create(invoice, true)" ng-show="id">Copy</button>
-            <button class="button" ng-click="remove(id)" ng-show="id">Delete</button>
-            <button class="button" ng-click="send(loggedInUser, id)" ng-show="id" ng-disabled="invoiceForm.$invalid || !invoice.details.total">
+            <button class="button alert" ng-click="remove(id)" ng-show="id">Delete</button>
+            <button class="button secondary" ng-click="send(loggedInUser, id)" ng-show="id" ng-disabled="invoiceForm.$invalid || !invoice.details.total">
                 <span ng-show="invoice.details.state == 'created'">Send Invoice</span>
-                <span ng-show="invoice.details.state == 'sent'">Re-Send Invoice</span>
+                <span ng-show="invoice.details.state == 'sent' || invoice.details.state == 'credit card'">Re-Send Invoice</span>
             </button>
-            <a ng-show="invoice.details.state == 'sent'" ui-sref="pay({userId: loggedInUser.id, invoiceId: id})">View Invoice</a>
+            <a class="button secondary" ng-show="invoice.details.state == 'sent' || invoice.details.state == 'credit card'" ui-sref="pay({userId: loggedInUser.id, invoiceId: id})">View Invoice</a>
         </div>
+
     </form>
+
+    <div class="row centered" ng-show="invoice.details.token">
+        <h2>Itemized Invoice</h2>
+
+        <table class="medium-12">
+            <thead>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Rate</th>
+                <th>Amount</th>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in invoice.details.items">
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.rate }}</td>
+                    <td>{{ item.quantity * item.rate | currency }}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="background-white" colspan="4"></td>
+                    <td colspan="2">
+                        <span class="left">Total:</span>
+                        <span class="right">{{ invoice.details.total | currency }}</span>
+                    </td>
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+
+    <div class="centered" ng-show="invoice.charge">
+
+        <hr>
+
+        <h2>Charge Complete</h2>
+
+        <div class="row">
+
+            <div class="medium-4 column">
+                <label for="charge-date">Date</label>
+                <span id="charge-date">{{ invoice.charge.created | unix | date }}</span>
+            </div>
+
+            <div class="medium-4 column">
+                <label for="charge-amount">Amount</label>
+                <span id="charge-amount">{{ invoice.charge.amount | currency }}</span>
+            </div>
+
+            <div class="medium-4 column">
+                <label for="charge-card">Card</label>
+                <span id="charge-card">Visa: ******{{ invoice.charge.card.last4 }}</span>
+            </div>
+        </div>
+
+        <div class="row" ng-show="invoice.details.state == 'paid'">
+            <br>
+            <br>
+            <button class="button" ng-click="create(invoice, true)" ng-show="id">Copy</button>
+            <a class="button secondary" ui-sref="pay({userId: loggedInUser.id, invoiceId: id})">View Invoice</a>
+        </div>
+    </div>
 
 </div>
