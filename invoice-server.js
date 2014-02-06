@@ -21,6 +21,7 @@ app.use(express.bodyParser()); // Hydrates req.body with request body
 
 app.all('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', "*");
+  res.header('Access-Control-Allow-Methods', req.headers['access-control-request-method']);
   res.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers']); // Allow whatever they're asking for
   next();
 });
@@ -182,6 +183,58 @@ app.post('/user/:userId/invoice/:invoiceId/token', function (req, res) {
     invoiceRef.child('sk').set(user.settings.stripe.sk);
     invoiceRef.child('details').child('token').set(token);
     deferredSave.resolve(token);
+  }, errorHandler);
+
+  deferredSave.promise.then(function (aToken) {
+    res.json(aToken);
+  });
+
+});
+
+app.delete('/user/:userId/invoice/:invoiceId/token', function (req, res) {
+  var token = req.body.token,
+    userPath = env.firebase + '/users/' + req.params.userId,
+    invoicePath = userPath + '/invoices/' + req.params.invoiceId,
+    userRef = new Firebase(userPath),
+    invoiceRef = new Firebase(invoicePath),
+    deferredUser = Q.defer(),
+    deferredInvoice = Q.defer(),
+    deferredSave = Q.defer(),
+    errorHandler = function (err) {
+      res.send(500, err);
+    };
+
+  // Get user value
+  userRef.auth(firebaseSecret, function (err, result) {
+    if (err) {
+      deferredUser.reject(err);
+    } else {
+      userRef.once('value', function (snapshot) {
+        deferredUser.resolve(snapshot.val());
+      });
+    }
+  });
+
+  // Get invoice value
+  deferredUser.promise.then(function () {
+    invoiceRef.auth(firebaseSecret, function (err, result) {
+
+      if (err) {
+        deferredInvoice.reject(err);
+      } else {
+        invoiceRef.once('value', function (snapshot) {
+          invoiceRef.child('details').child('state').set('sent');
+          deferredInvoice.resolve(snapshot.val());
+        });
+      }
+    });
+  });
+
+
+  Q.all([deferredUser.promise, deferredInvoice.promise]).spread(function (user, invoice) {
+    invoiceRef.child('sk').remove();
+    invoiceRef.child('details').child('token').remove();
+    deferredSave.resolve({});
   }, errorHandler);
 
   deferredSave.promise.then(function (aToken) {

@@ -38,6 +38,11 @@ angular.module('quiverInvoiceApp')
 
     setDefaults();
 
+    $scope.removeToken = function (invoice) {
+      stripeService.removeToken($stateParams.userId, $stateParams.invoiceId, invoice).then(function () {
+        notificationService.success('Credit Card', 'Credit Card Deleted');
+      });
+    },
 
     $scope.validateCardNumber = function (number) {
       $scope.cardForm.number.$invalid = !stripeService.validateCardNumber(number);

@@ -117,7 +117,33 @@
     <div class="row">
         <h2>Credit Card</h2>
 
-        <h3>{{ invoice.details.token }}</h3>
+        <table class="card-details medium-12" ng-show="invoice.details.token">
+            <thead>
+                <tr>
+                    <th>Card Number</th>
+                    <th>Card Type</th>
+                    <th>Expiration Month</th>
+                    <th>Expiration Year</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>******{{ invoice.details.token.card.last4 }}</td>
+                    <td>{{ invoice.details.token.card.type }}</td>
+                    <td>{{ invoice.details.token.card.exp_month }}</td>
+                    <td>{{ invoice.details.token.card.exp_year }}</td>
+                    <td>
+                        <a ng-click="removeToken(invoice)">Remove</a>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5"></td>
+                </tr>
+            </tfoot>
+        </table>
 
         <form action name="cardForm">
 
@@ -137,7 +163,10 @@
                 <select class="pull-right" name="year" ng-model="newCard.exp_year" ng-options="year for year in years"></select>
             </div>
             <div class="medium-6 column">
-                <button class="button" ng-click="createToken(invoice, newCard)" ng-disabled="cardForm.$invalid || cardForm.number.$invalid || cardForm.cvc.$invalid || cardForm.exp_month.$invalid || cardForm.month.$pristine">Add Card</button>
+                <button class="button" ng-click="createToken(invoice, newCard)" ng-disabled="cardForm.$invalid || cardForm.number.$invalid || cardForm.cvc.$invalid || cardForm.exp_month.$invalid || cardForm.month.$pristine">
+                    <span ng-hide="invoice.details.token">Add Card</span>
+                    <span ng-show="invoice.details.token">Replace Card</span>
+                </button>
 
                 <a href="https://stripe.com/help/security" class="background-powered-by-stripe" rel="nofollow" target="_blank"></a>
             </div>

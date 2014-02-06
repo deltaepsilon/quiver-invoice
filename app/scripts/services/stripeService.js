@@ -44,6 +44,10 @@ angular.module('quiverInvoiceApp')
         return Restangular.one('user', userId).one('invoice', invoiceId).all('token').post({token: token});
       },
 
+      removeToken: function (userId, invoiceId, invoice) {
+        return Restangular.one('user', userId).one('invoice', invoiceId).all('token').remove();
+      },
+
       cardType: Stripe.card.cardType,
 
       validateCardNumber: Stripe.card.validateCardNumber,
