@@ -77,79 +77,53 @@ var getUserAndInvoice = function (res, auth, userId, invoiceId, action, state) {
 };
 
 app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
-  var firebaseAuthToken = req.body.firebaseAuthToken,
-    userPath = env.firebase + '/users/' + req.params.userId,
-    invoicePath = userPath + '/invoices/' + req.params.invoiceId,
-    userRef = new Firebase(userPath),
-    invoiceRef = new Firebase(invoicePath),
-    deferredInvoice = Q.defer(),
-    deferredUser = Q.defer(),
+  var user,
+    invoice,
+    firebaseAuthToken = req.body.firebaseAuthToken,
     deferredTemplate = Q.defer(),
     deferredEmail = Q.defer(),
     errorHandler = function (err) {
       res.send(500, err);
-    };
+    },
+    action = function (aUser, aInvoice, userRef, invoiceRef, deferredAction) {
+      user = aUser;
+      invoice = aInvoice;
 
-  // Get user value
-  userRef.auth(firebaseAuthToken, function (err, result) {
-    if (err) {
-      deferredUser.reject(err);
-    } else {
-      userRef.once('value', function (snapshot) {
-        deferredUser.resolve(snapshot.val());
-      });
-    }
-  });
-
-  // Get invoice value
-   deferredUser.promise.then(function () {
-     invoiceRef.auth(firebaseAuthToken, function (err, result) {
-
-       if (err) {
-         deferredInvoice.reject(err);
-       } else {
-         invoiceRef.once('value', function (snapshot) {
-           invoiceRef.child('details').child('state').set('sent');
-           deferredInvoice.resolve(snapshot.val());
-         });
-       }
-     });
-   });
-
-  // Get email template
-  Q.all([deferredUser.promise, deferredInvoice.promise]).spread(function (user, invoice) {
-    var data = {
-        root: env.app,
-        user: user,
-        invoice: invoice,
-        params: req.params
-      },
-      template = 'invoice-recipient-email.txt';
-
-    switch (invoice.state) {
-      case 'sent':
-        template = 'invoice-recipient-email-reminder.txt';
-        break;
-      case 'paid':
-        return deferredTemplate.reject({error: 'Invoice has already been sent!'});
-        break;
-      default:
+      var data = {
+          root: env.app + '/#',
+          user: user,
+          invoice: invoice,
+          params: req.params
+        },
         template = 'invoice-recipient-email.txt';
-        break;
-    }
 
-    res.render(template, data, function (err, html) {
-      if (err) {
-        deferredTemplate.reject(err);
-      } else {
-        deferredTemplate.resolve(html);
+      switch (invoice.state) {
+        case 'sent':
+          template = 'invoice-recipient-email-reminder.txt';
+          break;
+        case 'paid':
+          return deferredTemplate.reject({error: 'Invoice has already been sent!'});
+          break;
+        default:
+          template = 'invoice-recipient-email.txt';
+          break;
       }
 
-    });
-  }, errorHandler);
+      res.render(template, data, function (err, html) {
+        if (err) {
+          deferredAction.reject(err);
+        } else {
+          deferredAction.resolve(html);
+        }
+
+      });
+    };
+
+  getUserAndInvoice(res, firebaseAuthToken, req.params.userId, req.params.invoiceId, action, 'sent').then(deferredTemplate.resolve);
+
 
   // Send email. See https://mandrillapp.com/api/docs/messages.JSON.html
-  Q.all([deferredUser.promise, deferredInvoice.promise, deferredTemplate.promise]).spread(function (user, invoice, template) {
+  deferredTemplate.promise.then(function (template) {
     var payload = {
       message: {
         text: template,
