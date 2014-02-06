@@ -52,12 +52,12 @@
     </thead>
     <tbody>
         <tr ng-repeat="(id, invoice) in user.invoices" ng-hide="id == 'next'">
-            <td>{{ invoice.date | date }}</td>
-            <td>{{ invoice.project }}</td>
-            <td>{{ invoice.number }}</td>
-            <td>{{ invoice.total }}</td>
-            <td>{{ invoice.email }}</td>
-            <td>{{ invoice.state }}</td>
+            <td>{{ invoice.details.date | date }}</td>
+            <td>{{ invoice.details.project }}</td>
+            <td>{{ invoice.details.number }}</td>
+            <td>{{ invoice.details.total }}</td>
+            <td>{{ invoice.details.email }}</td>
+            <td>{{ invoice.details.state }}</td>
             <td>
                 <a ui-sref="invoice({id: id})">View</a>
             </td>

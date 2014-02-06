@@ -9,15 +9,15 @@
 <div class="padded-row">
 
     <form class="centered" action name="invoiceForm" novalidate>
-        <h2 class="centered">Invoice #{{ invoice.number }} Details</h2>
+        <h2 class="centered">Invoice #{{ invoice.details.number }} Details</h2>
         <div class="row">
             <div class="large-6 medium-12">
                 <label for="invoice-date">Date</label>
-                <input id="invoice-date" type="date" ng-model="invoice.date" value="{{ invoice.date }}" ng-change="invoice.$save()" required/>
+                <input id="invoice-date" type="date" ng-model="invoice.details.date" value="{{ invoice.details.date }}" ng-change="invoice.$save()" required/>
             </div>
             <div class="large-6 medium-12">
                 <label for="invoice-project">Project</label>
-                <input id="invoice-project" type="text" ng-model="invoice.project" ng-change="invoice.$save()" placeholder="Project name..."/>
+                <input id="invoice-project" type="text" ng-model="invoice.details.project" ng-change="invoice.$save()" placeholder="Project name..."/>
             </div>
         </div>
 
@@ -28,19 +28,19 @@
 
             <div class="large-6 medium-12">
                 <label for="invoice-sender-name">Name</label>
-                <input id="invoice-sender-name" type="text" ng-model="invoice.sender.name" ng-change="invoice.$save()" placeholder="Sender name..." required/>
+                <input id="invoice-sender-name" type="text" ng-model="invoice.details.sender.name" ng-change="invoice.$save()" placeholder="Sender name..." required/>
             </div>
             <div class="large-6 medium-12">
                 <label for="invoice-sender-email">Email</label>
-                <input id="invoice-sender-email" type="email" ng-model="invoice.sender.email" ng-change="invoice.$save()" placeholder="Sender email..." required/>
+                <input id="invoice-sender-email" type="email" ng-model="invoice.details.sender.email" ng-change="invoice.$save()" placeholder="Sender email..." required/>
             </div>
             <div class="large-6 medium-12">
                 <label for="invoice-sender-pk">Stripe Publishable Key</label>
-                <input id="invoice-sender-pk" type="text" ng-model="invoice.sender.pk" ng-change="invoice.$save()" placeholder="Stripe publishable key..." required/>
+                <input id="invoice-sender-pk" type="text" ng-model="invoice.details.sender.pk" ng-change="invoice.$save()" placeholder="Stripe publishable key..." required/>
             </div>
             <div class="large-6 medium-12">
                 <label for="invoice-sender-address">Address</label>
-                <textarea id="invoice-sender-address" ng-model="invoice.sender.address" ng-change="invoice.$save()" placeholder="Sender address..."></textarea>
+                <textarea id="invoice-sender-address" ng-model="invoice.details.sender.address" ng-change="invoice.$save()" placeholder="Sender address..."></textarea>
             </div>
         </div>
 
@@ -51,15 +51,15 @@
 
             <div class="large-6 medium-12">
                 <label for="invoice-recipient-name">Name</label>
-                <input id="invoice-recipient-name" type="text" ng-model="invoice.recipient.name" ng-change="invoice.$save()" placeholder="Recipient name..." required/>
+                <input id="invoice-recipient-name" type="text" ng-model="invoice.details.recipient.name" ng-change="invoice.$save()" placeholder="Recipient name..." required/>
             </div>
             <div class="large-6 medium-12">
                 <label for="invoice-recipient-email">Email</label>
-                <input id="invoice-recipient-email" type="email" ng-model="invoice.recipient.email" ng-change="invoice.$save()" placeholder="Recipient email..." required/>
+                <input id="invoice-recipient-email" type="email" ng-model="invoice.details.recipient.email" ng-change="invoice.$save()" placeholder="Recipient email..." required/>
             </div>
             <div class="large-6 medium-12">
                 <label for="invoice-recipient-address">Address</label>
-                <textarea id="invoice-recipient-address" ng-model="invoice.recipient.address" ng-change="invoice.$save()" placeholder="Recipient address..."></textarea>
+                <textarea id="invoice-recipient-address" ng-model="invoice.details.recipient.address" ng-change="invoice.$save()" placeholder="Recipient address..."></textarea>
             </div>
         </div>
 
@@ -81,7 +81,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="item-row" ng-repeat="item in invoice.items">
+                    <tr class="item-row" ng-repeat="item in invoice.details.items">
                         <td>{{ item.id }}</td>
                         <td>
                             <input type="text" ng-model="item.name" required/>
@@ -129,7 +129,7 @@
                         <td class="background-white" colspan="5"></td>
                         <td colspan="2">
                             <span class="left">Total:</span>
-                            <span class="right">{{ invoice.total | currency }}</span>
+                            <span class="right">{{ invoice.details.total | currency }}</span>
                         </td>
                     </tr>
                 </tfoot>
@@ -139,11 +139,11 @@
             <button class="button" ng-click="create(invoice)" ng-hide="id">Create</button>
             <button class="button" ng-click="create(invoice, true)" ng-show="id">Copy</button>
             <button class="button" ng-click="remove(id)" ng-show="id">Delete</button>
-            <button class="button" ng-click="send(loggedInUser, id)" ng-show="id" ng-disabled="invoiceForm.$invalid || !invoice.total">
-                <span ng-show="invoice.state == 'created'">Send Invoice</span>
-                <span ng-show="invoice.state == 'sent'">Re-Send Invoice</span>
+            <button class="button" ng-click="send(loggedInUser, id)" ng-show="id" ng-disabled="invoiceForm.$invalid || !invoice.details.total">
+                <span ng-show="invoice.details.state == 'created'">Send Invoice</span>
+                <span ng-show="invoice.details.state == 'sent'">Re-Send Invoice</span>
             </button>
-            <a ng-show="invoice.state == 'sent'" ui-sref="pay({userId: loggedInUser.id, invoiceId: id})">View Invoice</a>
+            <a ng-show="invoice.details.state == 'sent'" ui-sref="pay({userId: loggedInUser.id, invoiceId: id})">View Invoice</a>
         </div>
     </form>
 

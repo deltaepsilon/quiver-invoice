@@ -3,23 +3,23 @@
 angular.module('quiverInvoiceApp')
   .controller('InvoiceCtrl', function ($scope, invoices, invoice, _, $state, $stateParams, notificationService, invoiceService, $timeout) {
     var indexItems = function () {
-      var i = $scope.invoice.items.length;
+      var i = $scope.invoice.details.items.length;
 
       while (i--) {
-        $scope.invoice.items[i].id = i + 1;
+        $scope.invoice.details.items[i].id = i + 1;
       }
     },
     calculateTotal = function () {
-      var i = $scope.invoice.items ? $scope.invoice.items.length : 0,
+      var i = $scope.invoice.details.items ? $scope.invoice.details.items.length : 0,
         total = 0,
         item;
 
       while (i--) {
-        item = $scope.invoice.items[i];
+        item = $scope.invoice.details.items[i];
         total += item.rate * item.quantity;
       }
 
-      $scope.invoice.total = total || undefined; // Undefined enables deletion. Otherwise, Firebase refuses to delete.
+      $scope.invoice.details.total = total || undefined; // Undefined enables deletion. Otherwise, Firebase refuses to delete.
 
       if ($scope.invoice.$save) {
         $scope.invoice.$save();
@@ -32,7 +32,7 @@ angular.module('quiverInvoiceApp')
 
 //    Settings Stripe publishable key
     $scope.user.$on('loaded', function () {
-      $scope.invoice.sender.pk = $scope.user.settings.stripe.pk;
+      $scope.invoice.details.sender.pk = $scope.user.settings.stripe.pk;
     });
 
 //    Setting id... it's very hard to track otherwise. Firebase objects are not aware of their IDs.
@@ -91,22 +91,22 @@ angular.module('quiverInvoiceApp')
     $scope.addItem = function (item) {
       var item = _.clone(item);
 
-      if (!$scope.invoice.items) {
-        $scope.invoice.items = [];
+      if (!$scope.invoice.details.items) {
+        $scope.invoice.details.items = [];
       }
-      $scope.invoice.items.push(item);
+      $scope.invoice.details.items.push(item);
       indexItems();
       save($scope.invoice);
     };
 
     $scope.removeItem = function (item) {
-      var i = $scope.invoice.items.length;
+      var i = $scope.invoice.details.items.length;
 
       indexItems(); // Just in case the IDs have magically not been assigned yet...
 
       while (i--) {
-        if ($scope.invoice.items[i].id === item.id) {
-          $scope.invoice.items.splice(i, 1);
+        if ($scope.invoice.details.items[i].id === item.id) {
+          $scope.invoice.details.items.splice(i, 1);
         }
       }
 

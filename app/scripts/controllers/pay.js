@@ -53,7 +53,7 @@ angular.module('quiverInvoiceApp')
 
     $scope.createToken = function (invoice, card) {
       stripeService.clearCache();
-      stripeService.createToken(invoice.sender.pk, card).then(function (res) {
+      stripeService.createToken(invoice.details.sender.pk, card).then(function (res) {
         stripeService.saveToken($stateParams.userId, $stateParams.invoiceId, res.response).then(function (token) {
           notificationService.success('Credit Card', 'Credit Card Added');
         });

@@ -62,7 +62,7 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
          deferredInvoice.reject(err);
        } else {
          invoiceRef.once('value', function (snapshot) {
-           invoiceRef.child('state').set('sent');
+           invoiceRef.child('details').child('state').set('sent');
            deferredInvoice.resolve(snapshot.val());
          });
        }
@@ -106,25 +106,25 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
     var payload = {
       message: {
         text: template,
-        subject: "You Have Received a Quiver Invoice from " + invoice.sender.name,
-        from_email: invoice.sender.email,
-        from_name: invoice.sender.name,
+        subject: "You Have Received a Quiver Invoice from " + invoice.details.sender.name,
+        from_email: invoice.details.sender.email,
+        from_name: invoice.details.sender.name,
         to: [
           {
-            email: invoice.recipient.email,
-            name: invoice.recipient.name,
+            email: invoice.details.recipient.email,
+            name: invoice.details.recipient.name,
             type: 'to'
           }
         ],
         headers: {
-          "Reply-To": invoice.sender.email
+          "Reply-To": invoice.details.sender.email
         },
         bcc_address: user.email
       }
     };
 
-    if (invoice.state === 'sent') {
-      payload.message.subject = "Quiver Invoice Reminder from " + invoice.sender.name;
+    if (invoice.details.state === 'sent') {
+      payload.message.subject = "Quiver Invoice Reminder from " + invoice.details.sender.name;
     }
 
     mandrill.messages.send(payload, deferredEmail.resolve, deferredEmail.reject);
@@ -170,7 +170,7 @@ app.post('/user/:userId/invoice/:invoiceId/token', function (req, res) {
         deferredInvoice.reject(err);
       } else {
         invoiceRef.once('value', function (snapshot) {
-          invoiceRef.child('state').set('credit card');
+          invoiceRef.child('details').child('state').set('credit card');
           deferredInvoice.resolve(snapshot.val());
         });
       }
@@ -180,7 +180,7 @@ app.post('/user/:userId/invoice/:invoiceId/token', function (req, res) {
 
   Q.all([deferredUser.promise, deferredInvoice.promise]).spread(function (user, invoice) {
     invoiceRef.child('sk').set(user.settings.stripe.sk);
-    invoiceRef.child('token').set(token);
+    invoiceRef.child('details').child('token').set(token);
     deferredSave.resolve(token);
   }, errorHandler);
 

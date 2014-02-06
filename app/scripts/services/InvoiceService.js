@@ -51,16 +51,18 @@ angular.module('quiverInvoiceApp')
               }
 
               deferred.resolve({
-                date: moment().format('YYYY-MM-DD'),
-                number: next,
-                project: null,
-                sender: {
-                  name: name,
-                  email: email,
-                  address: address
-                },
-                recipient: {},
-                items: []
+                details: {
+                  date: moment().format('YYYY-MM-DD'),
+                  number: next,
+                  project: null,
+                  sender: {
+                    name: name,
+                    email: email,
+                    address: address
+                  },
+                  recipient: {},
+                  items: []
+                }
               });
             });
 
@@ -90,7 +92,7 @@ angular.module('quiverInvoiceApp')
       },
 
       create: function (invoice, copy) {
-        invoice.state = 'created';
+        invoice.details.state = 'created';
 
         return notificationService.promiseNotify('Invoice', 'Invoice created', 'Invoice creation failed', function () {
           var deferred = $q.defer();
