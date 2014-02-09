@@ -12,8 +12,7 @@ describe('Filter: unix', function () {
   }));
 
   it('should return the input prefixed with "unix filter:"', function () {
-    var text = 'angularjs';
-    expect(unix(text)).toBe('unix filter: ' + text);
+    expect(unix(1318781876)).toBe('2011-10-16T10:17:56-06:00');
   });
 
 });

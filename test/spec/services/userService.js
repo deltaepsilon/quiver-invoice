@@ -64,6 +64,7 @@ describe('Service: userService', function () {
     userService.get().then(function (res) {
       result = Object.keys(res);
     });
+    $timeout.flush();
     expect(result).toEqual(['$child', '$save']);
   }));
 
@@ -76,6 +77,7 @@ describe('Service: userService', function () {
     userService.create(user).then(function (res) {
       result = res;
     });
+    $timeout.flush();
     expect(result).toEqual('$save');
   }));
 
@@ -84,15 +86,16 @@ describe('Service: userService', function () {
     userService.logIn(user).then(function (res) {
       result = res;
     });
+    $timeout.flush();
     expect(result).toBe('$login');
   }));
 
   it('should call $logout for logOut', inject(function ($timeout) {
     var result;
     userService.logOut(user).then(function (res) {
-      console.log('res', res);
       result = res;
     });
+    $timeout.flush();
     expect(result).toBe('$logout');
   }));
 
