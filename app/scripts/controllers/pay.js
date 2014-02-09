@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('PayCtrl', function ($scope, invoice, moment, stripeService, notificationService, invoiceService, $stateParams) {
+  .controller('PayCtrl', function ($scope, details, moment, stripeService, notificationService, invoiceService, $stateParams) {
     var i = 10,
       year = moment().year(),
       setDefaults = function () {
@@ -25,7 +25,9 @@ angular.module('quiverInvoiceApp')
     
 
 
-    $scope.invoice = invoice;
+    $scope.invoice = {
+      details: details
+    };
 
     // Set years
     $scope.years = [];
@@ -64,16 +66,26 @@ angular.module('quiverInvoiceApp')
         });
         setDefaults();
       }, function (res) {
-        notificationService.error('Credit Card', res.response.error.message);
+        notificationService.error('Credit Card', (res.response) ? res.response.error.message : res.data.message);
       });
     };
 
     $scope.pay = function () {
       stripeService.pay($stateParams.userId, $stateParams.invoiceId).then(function () {
-        notificationService.success('Payment', 'Payment complete!');
-        $scope.invoice = invoiceService.get($stateParams.invoiceId);
+        invoiceService.getDetailsByUser($stateParams.userId, $stateParams.invoiceId).then(function (details) {
+          $scope.invoice = {
+            details: details
+          };
+
+          notificationService.success('Payment', 'Payment complete!');
+        }, function (err) {
+          notificationService.error('Payment', err.message);
+        });
+
+
+
       }, function (res) {
-        notificationService.error('Payment', res.response.error.message);
+        notificationService.error('Payment', (res.response) ? res.response.error.message : res.data.message);
       });
     };
 

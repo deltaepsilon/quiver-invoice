@@ -1,4 +1,4 @@
-Greetings {{ invoice.name }},
+Greetings {{ invoice.details.recipient.name }},
 
 This is a friendly reminder of the invoice that you have received from {{ user.email }}.
 

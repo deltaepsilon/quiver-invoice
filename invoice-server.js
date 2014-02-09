@@ -190,7 +190,14 @@ app.delete('/user/:userId/invoice/:invoiceId/token', function (req, res) {
 });
 
 app.post('/user/:userId/invoice/:invoiceId/pay', function (req, res) {
-  var action = function (user, invoice, userRef, invoiceRef, deferredAction) {
+  var deferredTemplate = Q.defer(),
+    deferredEmail = Q.defer(),
+    user,
+    invoice,
+    action = function (aUser, aInvoice, userRef, invoiceRef, deferredAction) {
+      user = aUser;
+      invoice = aInvoice;
+
       var stripe = require('stripe')(invoice.sk),
         payload = {
           amount: invoice.details.total * 100,
@@ -199,21 +206,71 @@ app.post('/user/:userId/invoice/:invoiceId/pay', function (req, res) {
           description: 'Invoice #' + invoice.details.number + ', sent to ' + invoice.details.recipient.email
         };
 
-      console.log('payload', payload);
-      console.log('sk', invoice.sk);
       stripe.charges.create(payload).then(function (charge) {
-        console.log('charge', charge);
         invoiceRef.child('charge').set(charge);
         deferredAction.resolve(charge);
       }, deferredAction.reject);
     },
     errorHandler = function (err) {
       res.send(500, err);
+    },
+    getUserAndInvoicePromise;
+
+  getUserAndInvoicePromise = getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'paid');
+
+//  Respond to request
+  getUserAndInvoicePromise.then(function (result) {
+    res.json(result);
+
+  }, errorHandler);
+
+
+//  Send an email out of band
+  getUserAndInvoicePromise.then(function (charge) { // Render the email
+    var data = {
+        root: env.app + '/#',
+        user: user,
+        invoice: invoice,
+        params: req.params,
+        total: charge.amount / 100
+      },
+      template = 'invoice-recipient-paid.txt';
+
+    res.render(template, data, function (err, html) {
+      if (err) {
+        deferredTemplate.reject(err);
+      } else {
+        deferredTemplate.resolve(html);
+      }
+
+    });
+
+  });
+
+  deferredTemplate.promise.then(function (template) { // Send the email
+    var payload = {
+      message: {
+        text: template,
+        subject: "You Have Paid a Quiver Invoice from " + invoice.details.sender.name,
+        from_email: invoice.details.sender.email,
+        from_name: invoice.details.sender.name,
+        to: [
+          {
+            email: invoice.details.recipient.email,
+            name: invoice.details.recipient.name,
+            type: 'to'
+          }
+        ],
+        headers: {
+          "Reply-To": invoice.details.sender.email
+        },
+        bcc_address: user.email
+      }
     };
 
-  getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'paid').then(function (result) {
-    res.json(result);
-  }, errorHandler);
+    mandrill.messages.send(payload, deferredEmail.resolve, deferredEmail.reject);
+
+  });
 
 });
 

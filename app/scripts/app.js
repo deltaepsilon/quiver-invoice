@@ -100,12 +100,13 @@ angular.module('quiverInvoiceApp', [
       .state('pay', {
         url: '/users/:userId/invoices/:invoiceId/pay',
         views: {
+          nav: nav,
           body: {
             templateUrl: 'views/pay.html',
             controller: 'PayCtrl',
             resolve: {
-              invoice: function ($stateParams, invoiceService) {
-                return invoiceService.getByUser($stateParams.userId, $stateParams.invoiceId);
+              details: function ($stateParams, invoiceService) {
+                return invoiceService.getDetailsByUser($stateParams.userId, $stateParams.invoiceId);
               }
             }
           }
