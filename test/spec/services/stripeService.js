@@ -1,18 +1,18 @@
 'use strict';
 
-describe('Service: Stripeserivce', function () {
+describe('Service: stripeService', function () {
 
   // load the service's module
   beforeEach(module('quiverInvoiceApp'));
 
   // instantiate service
-  var Stripeserivce;
-  beforeEach(inject(function (_Stripeserivce_) {
-    Stripeserivce = _Stripeserivce_;
+  var stripeService;
+  beforeEach(inject(function (_stripeService_) {
+    stripeService = _stripeService_;
   }));
 
   it('should do something', function () {
-    expect(!!Stripeserivce).toBe(true);
+    expect(!!stripeService).toBe(true);
   });
 
 });

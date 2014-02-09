@@ -18,12 +18,11 @@
     "angular-notifications": "https://github.com/deltaepsilon/angular-notifications.git#master"
   },
   "devDependencies": {
-    "angular-mocks": "~1.0.7",
-    "angular-scenario": "~1.0.7"
+    "angular-scenario": "~1.0.7",
+    "angular-mocks": "~1.2.12"
   },
   "resolutions": {
-    "angular-mocks": "~1.2.9",
-    "angular": ">= 1.0.8",
-    "angular-scenario": "~1.2.9"
+    "angular": "~1.2.9",
+    "angular-mocks": "~1.2.0"
   }
 }
