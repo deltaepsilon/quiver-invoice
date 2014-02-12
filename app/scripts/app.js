@@ -102,6 +102,22 @@ angular.module('quiverInvoiceApp', [
           }
         }
       })
+      .state('payment', {
+        url: '/payment/:id',
+        views: {
+          nav: nav,
+          body: {
+            templateUrl: 'views/payment.html',
+            controller: 'PaymentCtrl',
+            resolve: {
+              payment: function ($stateParams, paymentService) {
+                return paymentService.get($stateParams.id);
+
+              }
+            }
+          }
+        }
+      })
       .state('pay', {
         url: '/users/:userId/invoices/:invoiceId/pay',
         views: {

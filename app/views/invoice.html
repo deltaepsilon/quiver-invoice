@@ -169,6 +169,7 @@
                 <tr ng-repeat="item in invoice.details.items">
                     <td>{{ item.id }}</td>
                     <td>{{ item.name }}</td>
+                    <td>{{ item.description }}</td>
                     <td>{{ item.quantity }}</td>
                     <td>{{ item.rate }}</td>
                     <td>{{ item.quantity * item.rate | currency }}</td>
@@ -202,7 +203,7 @@
 
             <div class="medium-4 column">
                 <label for="charge-amount">Amount</label>
-                <span id="charge-amount">{{ invoice.charge.amount | currency }}</span>
+                <span id="charge-amount">{{ invoice.charge.amount / 100 | currency }}</span>
             </div>
 
             <div class="medium-4 column">

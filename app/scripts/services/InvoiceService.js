@@ -78,6 +78,7 @@ angular.module('quiverInvoiceApp')
 
         deferred.resolve(detailsRef);
 
+
         return deferred.promise;
       },
 

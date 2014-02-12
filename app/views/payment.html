@@ -1,0 +1,139 @@
+<h1 class="padded-row text-center">Invoice Paid</h1>
+
+<br>
+<br>
+
+<div class="padded-row centered">
+
+    <h2>Invoice #{{ payment.details.number }} Details</h2>
+    <div class="row">
+        <div class="large-6 medium-12 column">
+            <label for="payment-date">Date</label>
+            <span id="payment-date">{{ payment.details.date | date }}</span>
+        </div>
+        <div class="large-6 medium-12 column" ng-show="payment.details.project">
+            <label for="payment-project">Project</label>
+            <span id="payment-project">{{ payment.details.project }}</span>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <h2 class="centered">Sender Details</h2>
+
+        <div class="large-6 medium-12 column">
+            <label for="payment-sender-name">Name</label>
+            <span id="payment-sender-name">{{ payment.details.sender.name }}</span>
+        </div>
+        <div class="large-6 medium-12 column">
+            <label for="payment-sender-email">Email</label>
+            <span id="payment-sender-email">{{ payment.details.sender.email }}</span>
+        </div>
+        <div class="medium-12 column">
+            <br>
+            <label for="payment-sender-address">Name</label>
+            <span id="payment-sender-address">{{ payment.details.sender.address }}</span>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <h2 class="centered">Recipient Details</h2>
+
+        <div class="large-6 medium-12 column">
+            <label for="payment-recipient-name">Name</label>
+            <span id="payment-recipient-name">{{ payment.details.recipient.name }}</span>
+        </div>
+        <div class="large-6 medium-12 column">
+            <label for="payment-recipient-email">Email</label>
+            <span id="payment-recipient-email">{{ payment.details.recipient.email }}</span>
+        </div>
+
+        <div class="medium-12 column">
+            <br>
+            <label for="payment-recipient-address">Address</label>
+            <span id="payment-recipient-address">{{ payment.details.recipient.address }}</span>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div class="row" ng-hide="invoice.details.token">
+        <h2>Itemized Invoice</h2>
+
+        <table class="invoice-items medium-12">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Rate</th>
+                <th>Amount</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr class="item-row" ng-repeat="item in payment.details.items">
+                    <td>{{ item.id }}</td>
+                    <td>
+                        {{ item.name }}
+                    </td>
+                    <td>
+                        {{ item.description }}
+                    </td>
+                    <td>
+                        {{ item.quantity }}
+                    </td>
+                    <td>
+                        {{ item.rate }}
+                    </td>
+                    <td>
+                        <span class="item-amount">{{ item.quantity * item.rate | currency}}</span>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="background-white" colspan="4"></td>
+                    <td colspan="2">
+                        <span class="left">Total:</span>
+                        <span class="right">{{ payment.details.total | currency }}</span>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
+
+    </div>
+
+    <div class="centered" ng-show="payment.charge">
+
+        <hr>
+
+        <h2>Charge Complete</h2>
+
+        <div class="row">
+
+            <div class="medium-4 column">
+                <label for="charge-date">Date</label>
+                <span id="charge-date">{{ payment.charge.created | unix | date }}</span>
+            </div>
+
+            <div class="medium-4 column">
+                <label for="charge-amount">Amount</label>
+                <span id="charge-amount">{{ payment.charge.amount / 100 | currency }}</span>
+            </div>
+
+            <div class="medium-4 column">
+                <label for="charge-card">Card</label>
+                <span id="charge-card">Visa: ******{{ payment.charge.card.last4 }}</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
