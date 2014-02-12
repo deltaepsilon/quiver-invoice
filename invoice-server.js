@@ -1,6 +1,7 @@
 var express = require('express'),
   app = express(),
   engines = require('consolidate'),
+  _ = require('underscore'),
   Q = require('q'),
   Mandrill = require('mandrill-api/mandrill').Mandrill,
   mandrill = new Mandrill(process.env.MANDRILL_API_KEY),
@@ -62,7 +63,6 @@ var getUserAndInvoice = function (res, auth, userId, invoiceId, action, state) {
         deferredInvoice.reject(err);
       } else {
         invoiceRef.once('value', function (snapshot) {
-          invoiceRef.child('details').child('state').set(state);
           deferredInvoice.resolve(snapshot.val());
         });
       }
@@ -71,6 +71,10 @@ var getUserAndInvoice = function (res, auth, userId, invoiceId, action, state) {
 
   Q.all([deferredUser.promise, deferredInvoice.promise]).spread(function (user, invoice) {
     action(user, invoice, userRef, invoiceRef, deferredAction);
+
+    deferredAction.promise.then(function () {
+      invoiceRef.child('details').child('state').set(state);
+    });
   }, errorHandler);
 
   return deferredAction.promise;
@@ -190,26 +194,45 @@ app.delete('/user/:userId/invoice/:invoiceId/token', function (req, res) {
 });
 
 app.post('/user/:userId/invoice/:invoiceId/pay', function (req, res) {
-  var deferredTemplate = Q.defer(),
+  var deferredPayment = Q.defer(),
+    deferredTemplate = Q.defer(),
     deferredEmail = Q.defer(),
     user,
     invoice,
+    payerId = req.body.id,
+    payerAuthToken = req.body.firebaseAuthToken,
+    paymentsRef = new Firebase(env.firebase + '/users/' + payerId + '/payments'),
     action = function (aUser, aInvoice, userRef, invoiceRef, deferredAction) {
       user = aUser;
       invoice = aInvoice;
 
-      var stripe = require('stripe')(invoice.sk),
-        payload = {
-          amount: invoice.details.total * 100,
-          currency: 'usd',
-          card: invoice.details.token.id,
-          description: 'Invoice #' + invoice.details.number + ', sent to ' + invoice.details.recipient.email
-        };
+      // Check that the user can auth with her own endpoint before proceeding
+//      paymentsRef.auth(payerAuthToken, function (err, result) {
+//        if (err) {
+//          deferredAction.reject(err);
+//        } else {
+//          deferredPayment.resolve(result);
+//        }
+//      });
 
-      stripe.charges.create(payload).then(function (charge) {
-        invoiceRef.child('charge').set(charge);
-        deferredAction.resolve(charge);
-      }, deferredAction.reject);
+      deferredPayment.resolve({});
+
+      // Execute Stripe charge and resolve deferredAction
+      deferredPayment.promise.then(function () {
+        var stripe = require('stripe')(invoice.sk),
+          payload = {
+            amount: invoice.details.total * 100,
+            currency: 'usd',
+            card: invoice.details.token.id,
+            description: 'Invoice #' + invoice.details.number + ', sent to ' + invoice.details.recipient.email
+          };
+
+        stripe.charges.create(payload).then(function (charge) {
+          invoiceRef.child('charge').set(charge);
+          deferredAction.resolve(charge);
+        }, deferredAction.reject);
+      });
+
     },
     errorHandler = function (err) {
       res.send(500, err);
@@ -223,6 +246,15 @@ app.post('/user/:userId/invoice/:invoiceId/pay', function (req, res) {
     res.json(result);
 
   }, errorHandler);
+
+//  Add to paying user's payments array
+  getUserAndInvoicePromise.then(function (charge) {
+    paymentsRef.auth(firebaseSecret, function (err, result) {
+      // Add to user's payments
+      invoice.charge = charge;
+      paymentsRef.push(_.omit(invoice, ['sk']));
+    });
+  });
 
 
 //  Send an email out of band

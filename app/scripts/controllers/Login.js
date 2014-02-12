@@ -5,13 +5,21 @@ angular.module('quiverInvoiceApp')
     var MESSAGE_REGEX = /FirebaseSimpleLogin: /,
       cleanMessage = function (message) {
         return message.replace(MESSAGE_REGEX, '');
+      },
+      forward = function () {
+        if ($state.previous) {
+          $state.go($state.previous.current.name, $state.previous.params);
+        } else {
+          $state.go('dashboard');
+        }
+
       };
 
     $scope.logIn = function (user) {
       var promise = userService.logIn(user);
 
       promise.then(function (res) {
-        $state.go('dashboard');
+        forward();
         notificationService.success('Login', 'Log in success!');
       }, function (err) {
         notificationService.error('Login', cleanMessage(err.message));
@@ -24,7 +32,7 @@ angular.module('quiverInvoiceApp')
       var promise = userService.create(user);
 
       promise.then(function (res) {
-        $state.go('dashboard');
+        forward();
         notificationService.success('Login', 'New user created!');
       }, function (err) {
         notificationService.error('Login', cleanMessage(err.message));

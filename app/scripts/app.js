@@ -11,8 +11,13 @@ angular.module('quiverInvoiceApp', [
   'firebase',
   'notifications'
 ])
-  .run(function (cacheService) {
+  .run(function (cacheService, $state, $rootScope, _) {
     cacheService.config(restangularProvider);
+
+    $rootScope.$on('$stateChangeStart', function () {
+      $state.previous = _.clone($state);
+    });
+
   })
   .config(function ($stateProvider, $urlRouterProvider, RestangularProvider) {
     restangularProvider = RestangularProvider;

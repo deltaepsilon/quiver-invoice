@@ -10,7 +10,8 @@
     "handlebars": "~1.3.0",
     "q": "~1.0.0",
     "mandrill-api": "~1.0.37",
-    "stripe": "~2.3.4"
+    "stripe": "~2.3.4",
+    "underscore": "~1.6.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
