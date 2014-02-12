@@ -2,9 +2,7 @@
 
 angular.module('quiverInvoiceApp')
   .controller('PayCtrl', function ($scope, details, moment, stripeService, notificationService, invoiceService, $stateParams, $rootScope) {
-    var i = 10,
-      year = moment().year(),
-      setDefaults = function () {
+    var setDefaults = function () {
         $scope.newCard = {
           exp_year: $scope.years[0],
           exp_month: 0
@@ -30,13 +28,10 @@ angular.module('quiverInvoiceApp')
     };
 
     // Set years
-    $scope.years = [];
-    while (i--) {
-      $scope.years.unshift(i + year);
-    }
+    $scope.years = stripeService.getYears();
 
     // Set months
-    $scope.months = ['Expiration Month', 'January (1)', 'February (2)', 'March (3)', 'April (4)', 'May (5)', 'June (6)', 'July (7)', 'August (8)', 'September (9)', 'October (10)', 'November (11)', 'December (12)'];
+    $scope.months = stripeService.getMonths();
 
     setDefaults();
 

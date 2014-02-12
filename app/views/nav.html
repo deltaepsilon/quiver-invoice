@@ -1,9 +1,14 @@
 <ul class="title-area row padded-row">
     <li class="name">
         <a ui-sref="root">
-            Quiver Invoice
+            <span ng-hide="loggedInUser">Quiver Invoice</span>
+            <span ng-show="loggedInUser">Dashboard</span>
         </a>
     </li>
+    <li class="left" ng-show="user">
+        <a ui-sref="invoice({id: 'new'})">New Invoice</a>
+    </li>
+
     <li class="login right">
         <a ui-sref="login" ng-hide="user" rel="nofollow">
             Log In
@@ -16,9 +21,8 @@
     <li class="settings right" ng-show="user">
         <a ui-sref="settings" rel="nofollow">
             <div class="fi-widget"></div>
+            <span class="text-white lowercase">{{ loggedInUser.email }}</span>
         </a>
     </li>
-    <li class="right" ng-show="user">
-        <a ui-sref="invoice({id: 'new'})">New Invoice</a>
-    </li>
+
 </ul>

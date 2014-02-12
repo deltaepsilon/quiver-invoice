@@ -6398,6 +6398,21 @@ hr {
   max-width: 641px;
 }
 
+/* line 93, modules/_global.scss */
+.lowercase {
+  text-transform: lowercase;
+}
+
+/* line 97, modules/_global.scss */
+.uppercase {
+  text-transform: uppercase;
+}
+
+/* line 101, modules/_global.scss */
+.capitalize {
+  text-transform: capitalize;
+}
+
 /* line 1, modules/_nav.scss */
 .top-bar {
   margin-bottom: 2em;
@@ -6414,6 +6429,10 @@ hr {
 .top-bar li {
   float: left;
   margin: 0 1em;
+}
+/* line 19, modules/_nav.scss */
+.top-bar .fi-widget {
+  display: inline-block;
 }
 
 /* line 1, modules/_notification.scss */

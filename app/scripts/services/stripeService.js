@@ -1,22 +1,32 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .service('stripeService', function stripeService($rootScope, $q, Stripe, environmentService, Restangular, cacheService) {
-    var cache = cacheService.get();
+  .service('stripeService', function stripeService($rootScope, $q, Stripe, Restangular, cacheService, moment) {
+    var cache = cacheService.get(),
+      year = moment().year();
 
-    var setPK = function () {
-      var deferred = $q.defer();
-      paramsService.get().then(function (params) {
-        deferred.resolve(Stripe.setPublishableKey(params.stripePK));
-      });
-      return deferred.promise;
-
-    };
+    console.log('env', env);
 
     return {
       clearCache: function () {
         cache.remove('/token');
       },
+
+      getMonths: function () {
+        return ['Expiration Month', 'January (1)', 'February (2)', 'March (3)', 'April (4)', 'May (5)', 'June (6)', 'July (7)', 'August (8)', 'September (9)', 'October (10)', 'November (11)', 'December (12)'];
+      },
+
+      getYears: function () {
+        var years = [],
+          i = 10;
+
+        while (i--) {
+          years.unshift(i + year);
+        }
+
+        return years;
+      },
+
       createToken: function (pk, card) {
         var deferred = $q.defer();
 

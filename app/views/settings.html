@@ -3,10 +3,90 @@
 <br>
 <br>
 
-<div class="padded-row">
-    <h2 class="centered">Contact</h2>
+<div class="padded-row centered">
 
-    <form class="centered" action name="contactForm">
+    <div class="row">
+        <h2>Quiver Invoice Subscription</h2>
+
+        <p>
+            Manage your Quiver Invoice subscription.
+        </p>
+
+        <div ng-show="user.subscription.token">
+            <br>
+            <table class="card-details medium-12">
+                <thead>
+                <tr>
+                    <th>Card Number</th>
+                    <th>Card Type</th>
+                    <th>Expiration Month</th>
+                    <th>Expiration Year</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>******{{ user.subscription.token.card.last4 }}</td>
+                    <td>{{ user.subscription.token.card.type }}</td>
+                    <td>{{ user.subscription.token.card.exp_month }}</td>
+                    <td>{{ user.subscription.token.card.exp_year }}</td>
+                    <td>
+                        <a ng-click="removeToken(user.subscription)">Remove</a>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="5"></td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+
+
+
+        <br>
+
+        <form action name="subscriptionForm">
+
+            <div class="large-6 medium-12 column">
+                <label for="card-number">Card Number</label>
+                <input id="card-number" class="large-9" name="number" type="number" ng-model="newCard.number" placeholder="Card number..." ng-change="validateCardNumber(newCard.number)" required/>
+            </div>
+            <div class="large-6 medium-12 column">
+                <label for="card-cvc">CVC Code</label>
+                <input id="card-cvc" name="cvc" type="number" ng-model="newCard.cvc" ng-change="validateCVC(newCard.cvc)" required/>
+            </div>
+            <div class="large-6 medium-12 column">
+                <select class="pull-left" name="month" ng-model="newCard.exp_month" ng-options="months.indexOf(m) as m for m in months"  ng-change="validateMonth(newCard.exp_month)"></select>
+
+            </div>
+            <div class="large-6 medium-12 column">
+                <select class="pull-right" name="year" ng-model="newCard.exp_year" ng-options="year for year in years"></select>
+            </div>
+            <div class="medium-6 column">
+                <button class="button" ng-click="createToken(newCard)" ng-disabled="cardForm.$invalid || cardForm.number.$invalid || cardForm.cvc.$invalid || cardForm.exp_month.$invalid || cardForm.month.$pristine">
+                    <span ng-hide="user.subscription.token">Add Card</span>
+                    <span ng-show="user.subscription.token">Replace Card</span>
+                </button>
+
+                <a href="https://stripe.com/help/security" class="background-powered-by-stripe" rel="nofollow" target="_blank"></a>
+            </div>
+            <div class="medium-6 column">
+                <div class="form-error" ng-show="cardForm.number.$invalid && cardForm.number.$dirty">Invalid card number</div>
+                <div class="form-error" ng-show="cardForm.cvc.$invalid && cardForm.cvc.$dirty">Invalid security code</div>
+                <div class="form-error" ng-show="cardForm.month.$invalid && cardForm.month.$dirty">Invalid month</div>
+                <div class="form-error" ng-show="cardForm.invalidCard">Invalid card details</div>
+            </div>
+
+        </form>
+    </div>
+
+    <hr>
+
+    <h2>Contact</h2>
+
+    <form action name="contactForm">
         <div class="row">
             <div class="large-6 medium-12">
                 <label for="contact-first-name">First Name</label>
@@ -30,11 +110,12 @@
         </div>
     </form>
 
+
     <hr>
 
-    <h2 class="centered">Company</h2>
+    <h2>Company</h2>
 
-    <form class="centered" action name="companyForm">
+    <form action name="companyForm">
         <div class="row">
             <div class="large-12">
                 <label for="company-name">Company Name</label>
@@ -58,33 +139,48 @@
 
     <hr>
 
-    <h2 class="centered">Payment</h2>
+    <h2>Accepting Payment</h2>
 
-    <form class="centered" action name="stripeForm">
+    <form action name="stripeForm">
+        <!--<div class="row">-->
+            <!--<div class="large-6 medium-12">-->
+                <!--<label for="stripe-secret-key-test">Stripe Test Secret Key</label>-->
+                <!--<input id="stripe-secret-key-test" type="text" ng-model="user.settings.stripe.sk_test" required/>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="row">-->
+            <!--<div class="large-6 medium-12">-->
+                <!--<label for="stripe-public-key-test">Stripe Test Public Key</label>-->
+                <!--<input id="stripe-public-key-test" type="text" ng-model="user.settings.stripe.pk_test" required/>-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <!--<hr>-->
+
+        <p>
+            Don't have a Stripe API account? <a href="https://manage.stripe.com/register">Well go get one!</a>
+            Stripe is painless, it has <a href="https://stripe.com/us/pricing">inexpensive interchange fees</a>, and it
+            deposits funds directly into your bank account.
+        </p>
+
+        <br>
+
+        <p>
+            Use your Stripe test API keys for testing the service without charging a real card. Otherwise, make sure to
+            use your live API keys.
+        </p>
+
+        <br>
+
         <div class="row">
             <div class="large-6 medium-12">
-                <label for="stripe-secret-key-test">Stripe Test Secret Key</label>
-                <input id="stripe-secret-key-test" type="text" ng-model="user.settings.stripe.sk_test" required/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="large-6 medium-12">
-                <label for="stripe-public-key-test">Stripe Test Public Key</label>
-                <input id="stripe-public-key-test" type="text" ng-model="user.settings.stripe.pk_test" required/>
-            </div>
-        </div>
-
-        <hr>
-
-        <div class="row">
-            <div class="large-6 medium-12">
-                <label for="stripe-secret-key">Stripe Live Secret Key</label>
+                <label for="stripe-secret-key">Stripe Secret Key</label>
                 <input id="stripe-secret-key" type="text" ng-model="user.settings.stripe.sk" required/>
             </div>
         </div>
         <div class="row">
             <div class="large-6 medium-12">
-                <label for="stripe-public-key">Stripe Live Public Key</label>
+                <label for="stripe-public-key">Stripe Public Key</label>
                 <input id="stripe-public-key" type="text" ng-model="user.settings.stripe.pk" required/>
             </div>
         </div>
