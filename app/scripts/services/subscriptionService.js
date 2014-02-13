@@ -5,7 +5,7 @@ angular.module('quiverInvoiceApp')
     var env = environmentService.get();
 
     return {
-      get: function (userId, customerId) {
+      get: function () {
         var deferred = $q.defer();
 
         userService.getLoggedInUser().then(function (loggedInUser) {

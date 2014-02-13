@@ -72,6 +72,10 @@ angular.module('quiverInvoiceApp')
     $scope.createSubscription = function (planId) {
       subscriptionService.createSubscription($scope.loggedInUser.id, planId).then(function () {
         notificationService.success('Subscription', 'Plan Saved');
+
+        subscriptionService.get().then(function (subscription) {
+          $scope.subscription = subscription;
+        });
       });
     };
 

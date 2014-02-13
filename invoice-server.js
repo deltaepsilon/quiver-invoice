@@ -393,20 +393,16 @@ app.get('/user/:userId/token/:firebaseAuthToken/subscription', function (req, re
 
 
     if (!user.subscription || !user.subscription.customer) {
-      deferredStripe.reject({error: "Subscription missing."});
+      deferredStripe.resolve({error: 'No subscriptions'});
     } else {
       stripe.customers.retrieve(user.subscription.customer.id, function (err, customer) {
         if (err) {
           res.send(500, err);
         } else {
-          console.log('subscriptions', customer.subscription);
-
-          // TODO Save subscription to firebase, just to be safe.
+          userRef.child('subscription').child('customer').set(customer);
           res.json(customer.subscription);
         }
       });
-
-      console.log('2');
 
     }
 
@@ -443,8 +439,6 @@ app.post('/user/:userId/plan/:planId', function (req, res) {
       stripe = require('stripe')(stripeSk);
 
       callback = function (subscription) {
-        console.log('subscription', subscription);
-        userRef.child('subscription').child('details').set(subscription);
         deferredStripe.resolve(subscription);
       };
 
