@@ -9,7 +9,7 @@
         <h2>Quiver Invoice Subscription</h2>
 
         <p>
-            Manage your Quiver Invoice subscription.
+            Save a credit card for billing.
         </p>
 
         <div ng-show="user.subscription.token">
@@ -43,11 +43,9 @@
             </table>
         </div>
 
-
-
         <br>
 
-        <form action name="subscriptionForm">
+        <form action name="subscriptionForm" novalidate>
 
             <div class="large-6 medium-12 column">
                 <label for="card-number">Card Number</label>
@@ -79,7 +77,29 @@
                 <div class="form-error" ng-show="cardForm.invalidCard">Invalid card details</div>
             </div>
 
+
+            <div class="medium-12 column">
+                <br>
+
+                <p>
+                    Select a plan.
+                </p>
+
+                <label for="plan"></label>
+                <select name="plan" id="plan" ng-model="plan.id" ng-options="plan.id as plan.description for plan in plans"></select>
+            </div>
+
+            <div class="medium-12 column">
+                <button class="button" ng-click="createSubscription(plan.id)" ng-disabled="!plan || !user.subscription.token.id || !user.subscription.customer.id">
+                    <span ng-hide="user.subscription.plan.id">Create Subscription</span>
+                    <span ng-show="user.subscription.plan.id">Save Subscription</span>
+                </button>
+            </div>
+
+
         </form>
+
+        {{ subscription }}
     </div>
 
     <hr>

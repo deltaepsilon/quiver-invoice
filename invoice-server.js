@@ -8,6 +8,7 @@ var express = require('express'),
   Firebase = require('firebase'),
   firebaseRoot = new Firebase('process.env.QUIVER_INVOICE_FIREBASE'),
   firebaseSecret = process.env.QUIVER_INVOICE_FIREBASE_SECRET,
+  stripeSk = process.env.QUIVER_INVOICE_STRIPE_SK,
   env = {
     environment: process.env.NODE_ENV,
     firebase: process.env.QUIVER_INVOICE_FIREBASE,
@@ -304,6 +305,159 @@ app.post('/user/:userId/invoice/:invoiceId/pay', function (req, res) {
 
   });
 
+});
+
+// Customer Methods
+
+var getUser = function (userId, authToken) {
+  var userPath = env.firebase + '/users/' + userId,
+    userRef = new Firebase(userPath),
+    deferredUser = Q.defer()
+
+  // Get user value
+  userRef.auth(authToken || firebaseSecret, function (err, result) {
+    if (err) {
+      deferredUser.reject(err);
+    } else {
+      userRef.once('value', function (snapshot) {
+        deferredUser.resolve({user: snapshot.val(), userRef: userRef});
+      });
+    }
+  });
+
+  return deferredUser.promise;
+};
+
+app.post('/user/:userId/customer', function (req, res) {
+  var userId = req.params.userId,
+    deferredStripe = Q.defer(),
+    errorHandler = function (err) {
+      res.send(500, err);
+    };
+
+
+  // Create Stripe customer
+  getUser(userId).then(function (result) {
+    var user = result.user,
+      userRef = result.userRef;
+
+    if (!user.subscription || !user.subscription.token) {
+      deferredStripe.reject({error: 'Stripe token missing'});
+    } else {
+
+      var stripe = require('stripe')(stripeSk),
+        payload = {
+          description: 'Quiver Invoice Customer: ' + user.email,
+          card: user.subscription.token.id
+        },
+        callback = function (customer) {
+          userRef.child('subscription').child('customer').set(customer);
+          deferredStripe.resolve(customer);
+        };
+
+      if (user.subscription.customer) {
+        stripe.customers.update(user.subscription.customer.id, payload).then(callback, deferredStripe.reject);
+      } else {
+        stripe.customers.create(payload).then(callback, deferredStripe.reject);
+      }
+
+    }
+
+  }, errorHandler);
+
+  deferredStripe.promise.then(function (customer) {
+    res.json(customer);
+  }, errorHandler);
+});
+
+// Plan Methods
+app.get('/plan', function (req, res) {
+  var stripe = require('stripe')(stripeSk);
+
+  stripe.plans.list(function (err, plans) {
+    if (err) {
+      res.send(500, err);
+    } else {
+      res.json(plans.data);
+    }
+  });
+});
+
+app.get('/user/:userId/token/:firebaseAuthToken/subscription', function (req, res) {
+  var deferredStripe = Q.defer();
+
+  getUser(req.params.userId, req.params.firebaseAuthToken).then(function (result) {
+    var stripe = require('stripe')(stripeSk),
+      user = result.user,
+      userRef = result.userRef;
+
+
+    if (!user.subscription || !user.subscription.customer) {
+      deferredStripe.reject({error: "Subscription missing."});
+    } else {
+      stripe.customers.retrieve(user.subscription.customer.id, function (err, customer) {
+        if (err) {
+          res.send(500, err);
+        } else {
+          console.log('subscriptions', customer.subscription);
+
+          // TODO Save subscription to firebase, just to be safe.
+          res.json(customer.subscription);
+        }
+      });
+
+      console.log('2');
+
+    }
+
+  });
+
+  deferredStripe.promise.then(function (subscriptions) {
+    res.json(subscription);
+  }, function (err) {
+    res.send(500, err);
+  });
+
+});
+
+app.post('/user/:userId/plan/:planId', function (req, res) {
+  var userId = req.params.userId,
+    planId = req.params.planId,
+    deferredStripe = Q.defer(),
+    errorHandler = function (err) {
+      res.send(500, err);
+    };
+
+
+  // Create Stripe customer
+  getUser(userId).then(function (result) {
+    var user = result.user,
+      userRef = result.userRef,
+      stripe,
+      callback;
+
+    if (!user.subscription || !user.subscription.token || !user.subscription.customer) {
+      deferredStripe.reject({error: 'Stripe token missing'});
+    } else {
+
+      stripe = require('stripe')(stripeSk);
+
+      callback = function (subscription) {
+        console.log('subscription', subscription);
+        userRef.child('subscription').child('details').set(subscription);
+        deferredStripe.resolve(subscription);
+      };
+
+      stripe.customers.updateSubscription(user.subscription.customer.id, {plan: planId}).then(callback, deferredStripe.reject);
+    }
+
+  }, errorHandler);
+
+  deferredStripe.promise.then(function (subscription) {
+    res.json(subscription);
+  }, function (err) {
+    console.log('deferredStripe rejected', err);
+  });
 });
 
 app.listen(9600);

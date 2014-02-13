@@ -75,7 +75,15 @@ angular.module('quiverInvoiceApp', [
           nav: nav,
           body: {
             templateUrl: 'views/settings.html',
-            controller: 'SettingsCtrl'
+            controller: 'SettingsCtrl',
+            resolve: {
+              plans: function (subscriptionService) {
+                return subscriptionService.getPlans();
+              },
+              subscription: function (subscriptionService) {
+                return subscriptionService.get();
+              }
+            }
           }
         }
       })
