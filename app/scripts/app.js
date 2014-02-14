@@ -33,7 +33,7 @@ angular.module('quiverInvoiceApp', [
           return userService.get();
         },
         loggedInUser: function (userService) {
-          return userService.getLoggedInUser();
+          return userService.getCurrentUser();
         }
       }
     };

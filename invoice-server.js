@@ -6,7 +6,7 @@ var express = require('express'),
   Mandrill = require('mandrill-api/mandrill').Mandrill,
   mandrill = new Mandrill(process.env.MANDRILL_API_KEY),
   Firebase = require('firebase'),
-  firebaseRoot = new Firebase('process.env.QUIVER_INVOICE_FIREBASE'),
+  firebaseRoot = new Firebase(process.env.QUIVER_INVOICE_FIREBASE),
   firebaseSecret = process.env.QUIVER_INVOICE_FIREBASE_SECRET,
   stripeSk = process.env.QUIVER_INVOICE_STRIPE_SK,
   env = {
@@ -14,11 +14,10 @@ var express = require('express'),
     firebase: process.env.QUIVER_INVOICE_FIREBASE,
     app: process.env.QUIVER_INVOICE_APP
   },
-  getErrorHandler = function (res) {
-    return function (err) {
-      res.send(500, err);
-    }
-  };
+  quiver = require('./middleware/quiver')(env),
+  getErrorHandler = quiver.getErrorHandler,
+  getUser = quiver.getUser,
+  getInvoice = quiver.getInvoice;
 
 firebaseRoot.auth(firebaseSecret);
 
@@ -30,12 +29,15 @@ app.all('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', "*");
   res.header('Access-Control-Allow-Methods', req.headers['access-control-request-method']);
   res.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers']); // Allow whatever they're asking for
+  res.header('Cache-Control', 'no-cache');
   next();
 });
 
 app.get('/env', function (req, res) {
   res.json(env);
 });
+
+app.all('/user/*', quiver.userMiddleware);
 
 // Generic function to get user and invoice then execute an action
 var getUserAndInvoice = function (res, auth, userId, invoiceId, action, state) {
@@ -305,26 +307,6 @@ app.post('/user/:userId/invoice/:invoiceId/pay', function (req, res) {
 });
 
 // Customer Methods
-
-var getUser = function (userId, authToken) {
-  var userPath = env.firebase + '/users/' + userId,
-    userRef = new Firebase(userPath),
-    deferredUser = Q.defer()
-
-  // Get user value
-  userRef.auth(authToken || firebaseSecret, function (err, result) {
-    if (err) {
-      deferredUser.reject(err);
-    } else {
-      userRef.once('value', function (snapshot) {
-        deferredUser.resolve({user: snapshot.val(), userRef: userRef});
-      });
-    }
-  });
-
-  return deferredUser.promise;
-};
-
 app.post('/user/:userId/customer', function (req, res) {
   var userId = req.params.userId,
     deferredStripe = Q.defer(),
@@ -378,18 +360,12 @@ app.get('/plan', function (req, res) {
   });
 });
 
-app.get('/user/:userId/token/:firebaseAuthToken/subscription', function (req, res) {
-  var deferredStripe = Q.defer();
-
-
-  // Don't let this guy get cached... ever!
-  res.header('Cache-Control', 'no-cache');
-
-  getUser(req.params.userId, req.params.firebaseAuthToken).then(function (result) {
-    var stripe = require('stripe')(stripeSk),
-      user = result.user,
-      userRef = result.userRef,
-      missing = {"empty": "No subscriptions"};
+app.get('/user/:userId/subscription', function (req, res) {
+  var deferredStripe = Q.defer(),
+    stripe = require('stripe')(stripeSk),
+    user = req.user,
+    userRef = req.userRef,
+    missing = {"empty": "No subscriptions"};
 
     if (!user.subscription || !user.subscription.customer) {
       deferredStripe.resolve(missing);
@@ -406,7 +382,6 @@ app.get('/user/:userId/token/:firebaseAuthToken/subscription', function (req, re
 
     }
 
-  });
 
   deferredStripe.promise.then(function (data) {
     res.json(data);

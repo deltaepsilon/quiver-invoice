@@ -2,7 +2,7 @@
 
 angular.module('quiverInvoiceApp')
   .controller('NavCtrl', function ($rootScope, $scope, user, loggedInUser, userService, $state) {
-    var protectedRoutes = ['dashboard', 'settings'];
+    var protectedRoutes = ['dashboard', 'settings', 'invoice', 'payment'];
 
     $rootScope.user = user;
     $rootScope.loggedInUser = loggedInUser;

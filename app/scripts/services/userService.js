@@ -1,27 +1,34 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .service('userService', function userService($q, $firebase, $firebaseSimpleLogin, environmentService) {
+  .service('userService', function userService($q, $firebase, $firebaseSimpleLogin, environmentService, Restangular) {
     var env = environmentService.get(),
       firebase = new Firebase(env.firebase),
       firebaseSimpleLogin = $firebaseSimpleLogin(firebase),
       usersRef = $firebase(new Firebase(env.firebase + '/users')),
-      Handler = environmentService.Handler;
-
-    return {
-      getLoggedInUser: function () {
+      Handler = environmentService.Handler,
+      getCurrentUser = function () {
         var deferred = $q.defer();
 
         firebaseSimpleLogin.$getCurrentUser().then(deferred.resolve, deferred.reject);
 
+        deferred.promise.then(function (currentUser) {
+          if (currentUser) {
+            Restangular.setDefaultHeaders({"Authorization": currentUser.firebaseAuthToken});
+          }
+        });
+
         return deferred.promise;
-      },
+      };
+
+    return {
+      getCurrentUser: getCurrentUser,
 
       get: function () {
         var deferred = $q.defer();
 
-        firebaseSimpleLogin.$getCurrentUser().then(function (user) {
-          deferred.resolve(user ? $firebase(new Firebase(env.firebase + '/users/' + user.id)) : null);
+        getCurrentUser().then(function (currentUser) {
+          deferred.resolve(currentUser ? $firebase(new Firebase(env.firebase + '/users/' + currentUser.id)) : null);
         }, deferred.reject);
 
         return deferred.promise;
@@ -30,18 +37,8 @@ angular.module('quiverInvoiceApp')
       getRef: function () {
         var deferred = $q.defer();
 
-        firebaseSimpleLogin.$getCurrentUser().then(function (user) {
+        getCurrentUser().then(function (user) {
           deferred.resolve(user ? usersRef.$child(user.id) : null);
-        }, deferred.reject);
-
-        return deferred.promise;
-      },
-
-      getCurrentUser: function () {
-        var deferred = $q.defer();
-
-        firebaseSimpleLogin.$getCurrentUser().then(function (user) {
-          deferred.resolve(user);
         }, deferred.reject);
 
         return deferred.promise;

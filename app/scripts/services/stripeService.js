@@ -5,8 +5,6 @@ angular.module('quiverInvoiceApp')
     var cache = cacheService.get(),
       year = moment().year();
 
-    console.log('env', env);
-
     return {
       clearCache: function () {
         cache.remove('/token');

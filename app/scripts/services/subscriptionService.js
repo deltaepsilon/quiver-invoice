@@ -8,8 +8,8 @@ angular.module('quiverInvoiceApp')
       get: function () {
         var deferred = $q.defer();
 
-        userService.getLoggedInUser().then(function (loggedInUser) {
-          Restangular.one('user', loggedInUser.id).one('token', loggedInUser.firebaseAuthToken).one('subscription').get().then(deferred.resolve, deferred.reject);
+        userService.getCurrentUser().then(function (loggedInUser) {
+          Restangular.one('user', loggedInUser.id).one('subscription').get().then(deferred.resolve, deferred.reject);
         });
 
         return deferred.promise;
