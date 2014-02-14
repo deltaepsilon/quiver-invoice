@@ -13,6 +13,11 @@ var express = require('express'),
     environment: process.env.NODE_ENV,
     firebase: process.env.QUIVER_INVOICE_FIREBASE,
     app: process.env.QUIVER_INVOICE_APP
+  },
+  getErrorHandler = function (res) {
+    return function (err) {
+      res.send(500, err);
+    }
   };
 
 firebaseRoot.auth(firebaseSecret);
@@ -41,9 +46,7 @@ var getUserAndInvoice = function (res, auth, userId, invoiceId, action, state) {
     deferredUser = Q.defer(),
     deferredInvoice = Q.defer(),
     deferredAction = Q.defer(),
-    errorHandler = function (err) {
-      res.send(500, err);
-    };
+    errorHandler = getErrorHandler(res);
 
   // Get user value
   userRef.auth(auth, function (err, result) {
@@ -87,9 +90,7 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
     firebaseAuthToken = req.body.firebaseAuthToken,
     deferredTemplate = Q.defer(),
     deferredEmail = Q.defer(),
-    errorHandler = function (err) {
-      res.send(500, err);
-    },
+    errorHandler = getErrorHandler(res),
     action = function (aUser, aInvoice, userRef, invoiceRef, deferredAction) {
       user = aUser;
       invoice = aInvoice;
@@ -171,9 +172,7 @@ app.post('/user/:userId/invoice/:invoiceId/token', function (req, res) {
       invoiceRef.child('details').child('token').set(token);
       deferredAction.resolve(token);
     },
-    errorHandler = function (err) {
-      res.send(500, err);
-    };
+    errorHandler = getErrorHandler(res);
 
   getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'credit card').then(function (result) {
     res.json(result);
@@ -235,9 +234,7 @@ app.post('/user/:userId/invoice/:invoiceId/pay', function (req, res) {
       });
 
     },
-    errorHandler = function (err) {
-      res.send(500, err);
-    },
+    errorHandler = getErrorHandler(res),
     getUserAndInvoicePromise;
 
   getUserAndInvoicePromise = getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'paid');
@@ -331,9 +328,7 @@ var getUser = function (userId, authToken) {
 app.post('/user/:userId/customer', function (req, res) {
   var userId = req.params.userId,
     deferredStripe = Q.defer(),
-    errorHandler = function (err) {
-      res.send(500, err);
-    };
+    errorHandler = getErrorHandler(res);
 
 
   // Create Stripe customer
@@ -386,21 +381,26 @@ app.get('/plan', function (req, res) {
 app.get('/user/:userId/token/:firebaseAuthToken/subscription', function (req, res) {
   var deferredStripe = Q.defer();
 
+
+  // Don't let this guy get cached... ever!
+  res.header('Cache-Control', 'no-cache');
+
   getUser(req.params.userId, req.params.firebaseAuthToken).then(function (result) {
     var stripe = require('stripe')(stripeSk),
       user = result.user,
-      userRef = result.userRef;
-
+      userRef = result.userRef,
+      missing = {"empty": "No subscriptions"};
 
     if (!user.subscription || !user.subscription.customer) {
-      deferredStripe.resolve({error: 'No subscriptions'});
+      deferredStripe.resolve(missing);
     } else {
       stripe.customers.retrieve(user.subscription.customer.id, function (err, customer) {
-        if (err) {
-          res.send(500, err);
+        if (err || !customer) {
+          deferredStripe.resolve(missing);
         } else {
-          userRef.child('subscription').child('customer').set(customer);
-          res.json(customer.subscription);
+          userRef.child('subscription').child('customer').set(customer, function () {
+            deferredStripe.resolve(customer.subscription || missing);
+          });
         }
       });
 
@@ -408,8 +408,8 @@ app.get('/user/:userId/token/:firebaseAuthToken/subscription', function (req, re
 
   });
 
-  deferredStripe.promise.then(function (subscriptions) {
-    res.json(subscription);
+  deferredStripe.promise.then(function (data) {
+    res.json(data);
   }, function (err) {
     res.send(500, err);
   });
@@ -420,38 +420,77 @@ app.post('/user/:userId/plan/:planId', function (req, res) {
   var userId = req.params.userId,
     planId = req.params.planId,
     deferredStripe = Q.defer(),
-    errorHandler = function (err) {
-      res.send(500, err);
-    };
+    errorHandler = getErrorHandler(res);
 
 
-  // Create Stripe customer
+  // Get Stripe customer
   getUser(userId).then(function (result) {
     var user = result.user,
       userRef = result.userRef,
       stripe,
-      callback;
+      subscription;
 
     if (!user.subscription || !user.subscription.token || !user.subscription.customer) {
-      deferredStripe.reject({error: 'Stripe token missing'});
+      deferredStripe.reject({error: 'Stripe customer missing'});
     } else {
 
       stripe = require('stripe')(stripeSk);
 
-      callback = function (subscription) {
-        deferredStripe.resolve(subscription);
-      };
+      stripe.customers.updateSubscription(user.subscription.customer.id, {plan: planId}).then(function (response) {
+        subscription = response;
+        return stripe.customers.retrieve(user.subscription.customer.id);
+      }).then(function (customer) {
+          // Save these suckers out of band... they might fail, but that won't derail the Stripe action
+          userRef.child('subscription').child('details').set(subscription, function () {
+            userRef.child('subscription').child('customer').set(customer, function () {
+              deferredStripe.resolve(subscription);
+            });
+          });
 
-      stripe.customers.updateSubscription(user.subscription.customer.id, {plan: planId}).then(callback, deferredStripe.reject);
+        }, deferredStripe.reject);
     }
 
   }, errorHandler);
 
   deferredStripe.promise.then(function (subscription) {
     res.json(subscription);
-  }, function (err) {
-    console.log('deferredStripe rejected', err);
+  }, errorHandler);
+});
+
+app.delete('/user/:userId/subscription', function (req, res) {
+  var userId = req.params.userId,
+    deferredStripe = Q.defer(),
+    errorHandler = getErrorHandler(res);
+
+  getUser(userId).then(function (result) {
+    var user = result.user,
+      userRef = result.userRef,
+      stripe,
+      subscription;
+
+    if (!user.subscription || !user.subscription.customer) {
+      deferredStripe.reject({error: 'Stripe customer missing'});
+    } else {
+      stripe = require('stripe')(stripeSk);
+
+      stripe.customers.cancelSubscription(user.subscription.customer.id, user.subscription.customer.subscription.id, {at_period_end: true}).then(function (response) {
+        subscription = response;
+        return stripe.customers.retrieve(user.subscription.customer.id);
+      }).then(function (customer) {
+          return userRef.child('subscription').child('customer').set(customer);
+      }).then(function (response) {
+          userRef.child('subscription').child('details').set(subscription);
+      }).then(deferredStripe.resolve, deferredStripe.reject);
+
+
+    }
+
   });
+
+  deferredStripe.promise.then(function (data) {
+    res.json(data);
+  }, errorHandler)
+
 });
 
 app.listen(9600);

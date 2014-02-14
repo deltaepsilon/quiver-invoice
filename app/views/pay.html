@@ -25,12 +25,12 @@
         <h2 class="centered">Invoice #{{ invoice.details.number }}</h2>
 
         <div class="row">
-            <div class="medium-6 column">
+            <div class="small-6 column">
                 <label for="invoice-date">Date</label>
                 <span id="invoice-date">{{ invoice.details.date | date }}</span>
             </div>
 
-            <div class="medium-6 column">
+            <div class="small-6 column">
                 <label for="invoice-project">Project</label>
                 <span id="invoice-project">{{ invoice.details.project }}</span>
             </div>
@@ -41,17 +41,17 @@
         <div class="row">
             <h2 class="centered">Sender</h2>
 
-            <div class="medium-6 column">
+            <div class="small-6 column">
                 <label for="invoice-sender-name">Name</label>
                 <span id="invoice-sender-name">{{ invoice.details.sender.name }}</span>
             </div>
 
-            <div class="medium-6 column">
+            <div class="small-6 column">
                 <label for="invoice-sender-email">Email</label>
                 <a id="invoice-sender-email" href="mailto:{{ invoice.details.sender.email }}">{{ invoice.details.sender.email }}</a>
             </div>
 
-            <div class="medium-12 column">
+            <div class="small-12 column">
                 <br>
                 <label for="invoice-sender-address">Address</label>
                 <span id="invoice-sender-address">{{ invoice.details.sender.address }}</span>
@@ -63,17 +63,17 @@
         <div class="row">
             <h2 class="centered">Recipient</h2>
 
-            <div class="medium-6 column">
+            <div class="small-6 column">
                 <label for="invoice-recipient-name">Name</label>
                 <span id="invoice-recipient-name">{{ invoice.details.recipient.name }}</span>
             </div>
 
-            <div class="medium-6 column">
+            <div class="small-6 column">
                 <label for="invoice-recipient-email">Email</label>
                 <a id="invoice-recipient-email" href="mailto:{{ invoice.details.recipient.email }}">{{ invoice.details.recipient.email }}</a>
             </div>
 
-            <div class="medium-12 column">
+            <div class="small-12 column">
                 <br>
                 <label for="invoice-recipient-address">Address</label>
                 <span id="invoice-recipient-address">{{ invoice.details.recipient.address }}</span>
@@ -85,7 +85,7 @@
         <div class="row">
             <h2>Itemized Invoice</h2>
 
-            <table class="invoice-items medium-12">
+            <table class="invoice-items small-12">
                 <thead>
                 <tr>
                     <th>ID</th>
@@ -124,7 +124,7 @@
             <div class="row">
                 <h2>Credit Card</h2>
 
-                <table class="card-details medium-12" ng-show="invoice.details.token">
+                <table class="card-details small-12" ng-show="invoice.details.token">
                     <thead>
                     <tr>
                         <th>Card Number</th>
@@ -156,22 +156,22 @@
 
                 <form action name="cardForm">
 
-                    <div class="large-6 medium-12 column">
+                    <div class="large-6 small-12 column">
                         <label for="card-number">Card Number</label>
                         <input id="card-number" class="large-9" name="number" type="number" ng-model="newCard.number" placeholder="Card number..." ng-change="validateCardNumber(newCard.number)" required=""/>
                     </div>
-                    <div class="large-6 medium-12 column">
+                    <div class="large-6 small-12 column">
                         <label for="card-cvc">CVC Code</label>
                         <input id="card-cvc" name="cvc" type="number" ng-model="newCard.cvc" ng-change="validateCVC(newCard.cvc)" required/>
                     </div>
-                    <div class="large-6 medium-12 column">
+                    <div class="large-6 small-12 column">
                         <select class="pull-left" name="month" ng-model="newCard.exp_month" ng-options="months.indexOf(m) as m for m in months"  ng-change="validateMonth(newCard.exp_month)"></select>
 
                     </div>
-                    <div class="large-6 medium-12 column">
+                    <div class="large-6 small-12 column">
                         <select class="pull-right" name="year" ng-model="newCard.exp_year" ng-options="year for year in years"></select>
                     </div>
-                    <div class="medium-6 column">
+                    <div class="small-6 column">
                         <button class="button" ng-click="createToken(invoice, newCard)" ng-disabled="cardForm.$invalid || cardForm.number.$invalid || cardForm.cvc.$invalid || cardForm.exp_month.$invalid || cardForm.month.$pristine">
                             <span ng-hide="invoice.details.token">Add Card</span>
                             <span ng-show="invoice.details.token">Replace Card</span>
@@ -179,7 +179,7 @@
 
                         <a href="https://stripe.com/help/security" class="background-powered-by-stripe" rel="nofollow" target="_blank"></a>
                     </div>
-                    <div class="medium-6 column">
+                    <div class="small-6 column">
                         <div class="form-error" ng-show="cardForm.number.$invalid && cardForm.number.$dirty">Invalid card number</div>
                         <div class="form-error" ng-show="cardForm.cvc.$invalid && cardForm.cvc.$dirty">Invalid security code</div>
                         <div class="form-error" ng-show="cardForm.month.$invalid && cardForm.month.$dirty">Invalid month</div>
@@ -195,10 +195,10 @@
             <div class="row">
                 <h2>Payment</h2>
 
-                <div class="medium-6 column">
+                <div class="small-6 column">
                     <button class="button" ng-click="pay(invoice)" ng-disabled="!invoice.details.token || !invoice.details.total">Finalize Payment</button>
                 </div>
-                <div class="medium-6 column">
+                <div class="small-6 column">
                     <div ng-hide="invoice.details.sender.pk">Invoice cannot be paid. Sender missing payment information.</div>
                 </div>
 
@@ -210,17 +210,17 @@
 
             <div class="row">
 
-                <div class="medium-4 column">
+                <div class="small-4 column">
                     <label for="charge-date">Date</label>
                     <span id="charge-date">{{ invoice.charge.created | unix | date }}</span>
                 </div>
 
-                <div class="medium-4 column">
+                <div class="small-4 column">
                     <label for="charge-amount">Amount</label>
                     <span id="charge-amount">{{ invoice.charge.amount | currency }}</span>
                 </div>
 
-                <div class="medium-4 column">
+                <div class="small-4 column">
                     <label for="charge-card">Card</label>
                     <span id="charge-card">Visa: ******{{ invoice.charge.card.last4 }}</span>
                 </div>

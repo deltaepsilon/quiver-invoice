@@ -49,6 +49,10 @@ angular.module('quiverInvoiceApp')
 
       createSubscription: function (userId, planId) {
         return Restangular.one('user', userId).one('plan', planId).post();
+      },
+
+      cancelSubscription: function (userId) {
+        return Restangular.one('user', userId).one('subscription').remove();
       }
 
     }

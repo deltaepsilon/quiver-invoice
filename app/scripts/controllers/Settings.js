@@ -27,8 +27,11 @@ angular.module('quiverInvoiceApp')
 
     // Set up plans
     var i = plans.length;
+
+    $scope.planOptions = {};
+
     while (i--) {
-      plans[i].description = plans[i].name + ': ' + $filter('currency')(plans[i].amount/100) + ' + ' + plans[i].trial_period_days + ' day trial';
+      $scope.planOptions[plans[i].id] = plans[i].name + ': ' + $filter('currency')(plans[i].amount/100) + ' + ' + plans[i].trial_period_days + ' day trial';
     }
     $scope.plans = plans;
     $scope.plan = plans[0]; // Default
@@ -41,6 +44,11 @@ angular.module('quiverInvoiceApp')
     $scope.months = stripeService.getMonths();
     
     setDefaults();
+
+
+    $scope.notify = function (action) {
+      return notificationService.promiseNotify('Settings', 'Saved', 'Save failed', action);
+    };
 
     $scope.validateCardNumber = function (number) {
       $scope.subscriptionForm.number.$invalid = !stripeService.validateCardNumber(number);
@@ -70,16 +78,20 @@ angular.module('quiverInvoiceApp')
     };
 
     $scope.createSubscription = function (planId) {
-      subscriptionService.createSubscription($scope.loggedInUser.id, planId).then(function () {
+      subscriptionService.createSubscription($scope.loggedInUser.id, planId).then(function (subscription) {
         notificationService.success('Subscription', 'Plan Saved');
+        $scope.subscription = subscription;
 
-        subscriptionService.get().then(function (subscription) {
-          $scope.subscription = subscription;
-        });
       });
     };
 
-    $scope.notify = function (action) {
-      return notificationService.promiseNotify('Settings', 'Saved', 'Save failed', action);
+    $scope.cancelSubscription = function () {
+      subscriptionService.cancelSubscription($scope.loggedInUser.id).then(function () {
+        subscriptionService.get().then(function (subscription) {
+          $scope.subscription = subscription;
+        });
+
+      });
     };
+
   });
