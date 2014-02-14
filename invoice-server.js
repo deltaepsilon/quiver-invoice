@@ -167,7 +167,7 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
 
 });
 
-app.post('/user/:userId/invoice/:invoiceId/token', function (req, res) {
+app.post('/payer/:payerId/user/:userId/invoice/:invoiceId/token', function (req, res) {
   var token = req.body.token,
     action = function (user, invoice, userRef, invoiceRef, deferredAction) {
       invoiceRef.child('sk').set(user.settings.stripe.sk);
@@ -182,73 +182,113 @@ app.post('/user/:userId/invoice/:invoiceId/token', function (req, res) {
 
 });
 
-app.delete('/user/:userId/invoice/:invoiceId/token', function (req, res) {
-  var action = function (user, invoice, userRef, invoiceRef, deferredAction) {
+app.delete('/payer/:payerId/user/:userId/invoice/:invoiceId/token', function (req, res) {
+  var payerToken = req.headers.authorization,
+    payerId = req.params.payerId,
+    userId = req.params.userId,
+    invoiceId = req.params.invoiceId,
+    payer,
+    payerRef,
+    user,
+    userRef,
+    invoice,
+    invoiceRef,
+    errorHandler = getErrorHandler(res),
+    deferredStripe = Q.defer();
+
+  getUser(payerId, payerToken).then(function (result) {
+    payer = result.user;
+    payerRef = result.userRef;
+    return getUser(userId, firebaseSecret);
+  }, deferredStripe.reject).then(function (result) {
+      user = result.user;
+      userRef = result.userRef;
+      return getInvoice(userId, invoiceId, firebaseSecret);
+  }, deferredStripe.reject).then(function (result) {
+      invoice = result.invoice;
+      invoiceRef = result.invoiceRef;
+
       invoiceRef.child('sk').remove();
       invoiceRef.child('details').child('token').remove();
-      deferredAction.resolve({});
-    };
+      invoiceRef.child('details').child('state').set('sent');
+      deferredStripe.resolve({"message": "Card removed"});
+  }, deferredStripe.reject);
 
-  getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'sent').then(function (result) {
-    res.json(result);
-  });
+  deferredStripe.promise.then(res.json, errorHandler);
 
 });
 
-app.post('/user/:userId/invoice/:invoiceId/pay', function (req, res) {
-  var deferredPayment = Q.defer(),
+app.post('/payer/:payerId/user/:userId/invoice/:invoiceId/pay', function (req, res) {
+  var deferredStripe = Q.defer(),
     deferredTemplate = Q.defer(),
     deferredEmail = Q.defer(),
+    payerToken = req.headers.authorization,
+    payerId = req.params.payerId,
+    userId = req.params.userId,
+    invoiceId = req.params.invoiceId,
+    payer,
+    payerRef,
     user,
+    userRef,
     invoice,
-    payerId = req.body.id,
-    payerAuthToken = req.body.firebaseAuthToken,
+    invoiceRef,
+    stripe,
     paymentsRef = new Firebase(env.firebase + '/users/' + payerId + '/payments'),
-    action = function (aUser, aInvoice, userRef, invoiceRef, deferredAction) {
-      user = aUser;
-      invoice = aInvoice;
+    errorHandler = getErrorHandler(res);
 
-      // Check that the user can auth with her own endpoint before proceeding
-//      paymentsRef.auth(payerAuthToken, function (err, result) {
-//        if (err) {
-//          deferredAction.reject(err);
-//        } else {
-//          deferredPayment.resolve(result);
-//        }
-//      });
+  getUser(payerId, payerToken).then(function (result) {
+    payer = result.user;
+    payerRef = result.payerRef;
+    return getUser(userId, firebaseSecret);
+  }, deferredStripe.reject).then(function (result) {
+    user = result.user;
+    userRef = result.userRef;
+    return getInvoice(userId, invoiceId, firebaseSecret);
+  }, deferredStripe.reject).then(function (result) {
+      invoice = result.invoice;
+      invoiceRef = result.invoiceRef;
 
-      deferredPayment.resolve({});
+      // Make sure that the recipient and the payer are one and the same.
+      if (invoice.details.recipient.email === payer.email) {
+        stripe = require('stripe')(invoice.sk);
 
-      // Execute Stripe charge and resolve deferredAction
-      deferredPayment.promise.then(function () {
-        var stripe = require('stripe')(invoice.sk),
-          payload = {
+        var payload = {
             amount: invoice.details.total * 100,
             currency: 'usd',
             card: invoice.details.token.id,
             description: 'Invoice #' + invoice.details.number + ', sent to ' + invoice.details.recipient.email
           };
 
-        stripe.charges.create(payload).then(function (charge) {
-          invoiceRef.child('charge').set(charge);
-          deferredAction.resolve(charge);
-        }, deferredAction.reject);
+        return stripe.charges.create(payload);
+      } else {
+        deferredStripe.reject({"error": "Recipient and payer emails do not match."});
+      }
+
+  }, deferredStripe.reject).then(function (charge) {
+      invoiceRef.child('charge').set(charge, function (err) {
+        if (err) {
+          deferredStripe.reject(err);
+        } else {
+          invoiceRef.child('details').child('state').set('paid', function (err) {
+            if (err) {
+              deferredStripe.reject(err);
+            } else {
+              deferredStripe.resolve(charge);
+            }
+          });
+        }
+
       });
+  }, deferredStripe.reject);
 
-    },
-    errorHandler = getErrorHandler(res),
-    getUserAndInvoicePromise;
 
-  getUserAndInvoicePromise = getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'paid');
 
-//  Respond to request
-  getUserAndInvoicePromise.then(function (result) {
-    res.json(result);
-
+  deferredStripe.promise.then(function (charge) {
+    res.json(charge);
   }, errorHandler);
 
 //  Add to paying user's payments array
-  getUserAndInvoicePromise.then(function (charge) {
+  deferredStripe.promise.then(function (charge) {
     paymentsRef.auth(firebaseSecret, function (err, result) {
       // Add to user's payments
       invoice.charge = charge;
@@ -258,7 +298,7 @@ app.post('/user/:userId/invoice/:invoiceId/pay', function (req, res) {
 
 
 //  Send an email out of band
-  getUserAndInvoicePromise.then(function (charge) { // Render the email
+  deferredStripe.promise.then(function (charge) { // Render the email
     var data = {
         root: env.app + '/#',
         user: user,

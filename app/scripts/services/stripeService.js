@@ -48,16 +48,16 @@ angular.module('quiverInvoiceApp')
         return Restangular.one('token').get();
       },
 
-      saveToken: function (userId, invoiceId, token) {
-        return Restangular.one('user', userId).one('invoice', invoiceId).all('token').post({token: token});
+      saveToken: function (loggedInUserId, userId, invoiceId, token) {
+        return Restangular.one('payer', loggedInUserId).one('user', userId).one('invoice', invoiceId).all('token').post({token: token});
       },
 
-      removeToken: function (userId, invoiceId, invoice) {
-        return Restangular.one('user', userId).one('invoice', invoiceId).all('token').remove();
+      removeToken: function (userId, invoiceId, loggedInUserId, invoice) {
+        return Restangular.one('payer', loggedInUserId).one('user', userId).one('invoice', invoiceId).all('token').remove();
       },
 
       pay: function (userId, invoiceId, loggedInUser) {
-        return Restangular.one('user', userId).one('invoice', invoiceId).all('pay').post(loggedInUser);
+        return Restangular.one('payer', loggedInUser.id).one('user', userId).one('invoice', invoiceId).all('pay').post(loggedInUser);
       },
 
       cardType: Stripe.card.cardType,

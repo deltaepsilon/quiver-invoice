@@ -134,8 +134,8 @@ angular.module('quiverInvoiceApp', [
             templateUrl: 'views/pay.html',
             controller: 'PayCtrl',
             resolve: {
-              details: function ($stateParams, invoiceService) {
-                return invoiceService.getDetailsByUser($stateParams.userId, $stateParams.invoiceId);
+              invoice: function ($stateParams, invoiceService) {
+                return invoiceService.getInvoiceByUser($stateParams.userId, $stateParams.invoiceId);
               }
             }
           }

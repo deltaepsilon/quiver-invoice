@@ -72,11 +72,12 @@ angular.module('quiverInvoiceApp')
         return deferred.promise;
       },
 
-      getDetailsByUser: function (userId, invoiceId) {
+      getInvoiceByUser: function (userId, invoiceId) {
         var deferred = $q.defer(),
-          detailsRef = $firebase(new Firebase(env.firebase + '/users/' + userId + '/invoices/' + invoiceId + '/details'));
+          detailsRef = $firebase(new Firebase(env.firebase + '/users/' + userId + '/invoices/' + invoiceId + '/details')),
+          chargeRef = $firebase(new Firebase(env.firebase + '/users/' + userId + '/invoices/' + invoiceId + '/charge'));
 
-        deferred.resolve(detailsRef);
+        deferred.resolve({details: detailsRef, charge: chargeRef});
 
 
         return deferred.promise;

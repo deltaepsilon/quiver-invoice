@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('PayCtrl', function ($scope, details, moment, stripeService, notificationService, invoiceService, $stateParams, $rootScope) {
+  .controller('PayCtrl', function ($scope, invoice, moment, stripeService, notificationService, invoiceService, $stateParams, $rootScope) {
     var setDefaults = function () {
         $scope.newCard = {
           exp_year: $scope.years[0],
@@ -23,9 +23,7 @@ angular.module('quiverInvoiceApp')
     
 
 
-    $scope.invoice = {
-      details: details
-    };
+    $scope.invoice = invoice;
 
     // Set years
     $scope.years = stripeService.getYears();
@@ -36,7 +34,7 @@ angular.module('quiverInvoiceApp')
     setDefaults();
 
     $scope.removeToken = function (invoice) {
-      stripeService.removeToken($stateParams.userId, $stateParams.invoiceId, invoice).then(function () {
+      stripeService.removeToken($stateParams.userId, $stateParams.invoiceId, $scope.loggedInUser.id, invoice).then(function () {
         notificationService.success('Credit Card', 'Credit Card Deleted');
       });
     },
@@ -56,7 +54,7 @@ angular.module('quiverInvoiceApp')
     $scope.createToken = function (invoice, card) {
       stripeService.clearCache();
       stripeService.createToken(invoice.details.sender.pk, card).then(function (res) {
-        stripeService.saveToken($stateParams.userId, $stateParams.invoiceId, res.response).then(function (token) {
+        stripeService.saveToken($scope.loggedInUser.id, $stateParams.userId, $stateParams.invoiceId, res.response).then(function (token) {
           notificationService.success('Credit Card', 'Credit Card Added');
         });
         setDefaults();
@@ -69,10 +67,8 @@ angular.module('quiverInvoiceApp')
 
       stripeService.pay($stateParams.userId, $stateParams.invoiceId, $rootScope.loggedInUser).then(function () {
 
-        invoiceService.getDetailsByUser($stateParams.userId, $stateParams.invoiceId).then(function (details) {
-          $scope.invoice = {
-            details: details
-          };
+        invoiceService.getInvoiceByUser($stateParams.userId, $stateParams.invoiceId).then(function (invoice) {
+          $scope.invoice = invoice;
 
           notificationService.success('Payment', 'Payment complete!');
         }, function (err) {

@@ -32,7 +32,9 @@ angular.module('quiverInvoiceApp')
 
 //    Settings Stripe publishable key
     $scope.user.$on('loaded', function () {
-      $scope.invoice.details.sender.pk = $scope.user.settings.stripe.pk;
+      if ($scope.user && $scope.user.settings && $scope.user.settings.stripe) {
+        $scope.invoice.details.sender.pk = $scope.user.settings.stripe.pk;
+      }
     });
 
 //    Setting id... it's very hard to track otherwise. Firebase objects are not aware of their IDs.
