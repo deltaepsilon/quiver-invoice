@@ -14,7 +14,7 @@ var express = require('express'),
     firebase: process.env.QUIVER_INVOICE_FIREBASE,
     app: process.env.QUIVER_INVOICE_APP
   },
-  quiver = require('./middleware/quiver')(env),
+  quiver = require('./middleware/quiver')(env, firebaseSecret),
   getErrorHandler = quiver.getErrorHandler,
   getUser = quiver.getUser,
   getInvoice = quiver.getInvoice;
@@ -308,39 +308,33 @@ app.post('/user/:userId/invoice/:invoiceId/pay', function (req, res) {
 
 // Customer Methods
 app.post('/user/:userId/customer', function (req, res) {
-  var userId = req.params.userId,
+  var user = req.user,
+    userRef = req.userRef,
     deferredStripe = Q.defer(),
     errorHandler = getErrorHandler(res);
 
 
-  // Create Stripe customer
-  getUser(userId).then(function (result) {
-    var user = result.user,
-      userRef = result.userRef;
+  if (!user.subscription || !user.subscription.token) {
+    deferredStripe.reject({error: 'Stripe token missing'});
+  } else {
 
-    if (!user.subscription || !user.subscription.token) {
-      deferredStripe.reject({error: 'Stripe token missing'});
+    var stripe = require('stripe')(stripeSk),
+      payload = {
+        description: 'Quiver Invoice Customer: ' + user.email,
+        card: user.subscription.token.id
+      },
+      callback = function (customer) {
+        userRef.child('subscription').child('customer').set(customer);
+        deferredStripe.resolve(customer);
+      };
+
+    if (user.subscription.customer) {
+      stripe.customers.update(user.subscription.customer.id, payload).then(callback, deferredStripe.reject);
     } else {
-
-      var stripe = require('stripe')(stripeSk),
-        payload = {
-          description: 'Quiver Invoice Customer: ' + user.email,
-          card: user.subscription.token.id
-        },
-        callback = function (customer) {
-          userRef.child('subscription').child('customer').set(customer);
-          deferredStripe.resolve(customer);
-        };
-
-      if (user.subscription.customer) {
-        stripe.customers.update(user.subscription.customer.id, payload).then(callback, deferredStripe.reject);
-      } else {
-        stripe.customers.create(payload).then(callback, deferredStripe.reject);
-      }
-
+      stripe.customers.create(payload).then(callback, deferredStripe.reject);
     }
 
-  }, errorHandler);
+  }
 
   deferredStripe.promise.then(function (customer) {
     res.json(customer);
@@ -392,40 +386,33 @@ app.get('/user/:userId/subscription', function (req, res) {
 });
 
 app.post('/user/:userId/plan/:planId', function (req, res) {
-  var userId = req.params.userId,
+  var user = req.user,
+    userRef = req.userRef,
     planId = req.params.planId,
     deferredStripe = Q.defer(),
-    errorHandler = getErrorHandler(res);
+    errorHandler = getErrorHandler(res),
+    stripe,
+    subscription;
 
+  if (!user.subscription || !user.subscription.token || !user.subscription.customer) {
+    deferredStripe.reject({error: 'Stripe customer missing'});
+  } else {
 
-  // Get Stripe customer
-  getUser(userId).then(function (result) {
-    var user = result.user,
-      userRef = result.userRef,
-      stripe,
-      subscription;
+    stripe = require('stripe')(stripeSk);
 
-    if (!user.subscription || !user.subscription.token || !user.subscription.customer) {
-      deferredStripe.reject({error: 'Stripe customer missing'});
-    } else {
-
-      stripe = require('stripe')(stripeSk);
-
-      stripe.customers.updateSubscription(user.subscription.customer.id, {plan: planId}).then(function (response) {
-        subscription = response;
-        return stripe.customers.retrieve(user.subscription.customer.id);
-      }).then(function (customer) {
-          // Save these suckers out of band... they might fail, but that won't derail the Stripe action
-          userRef.child('subscription').child('details').set(subscription, function () {
-            userRef.child('subscription').child('customer').set(customer, function () {
-              deferredStripe.resolve(subscription);
-            });
+    stripe.customers.updateSubscription(user.subscription.customer.id, {plan: planId}).then(function (response) {
+      subscription = response;
+      return stripe.customers.retrieve(user.subscription.customer.id);
+    }).then(function (customer) {
+        // Save these suckers out of band... they might fail, but that won't derail the Stripe action
+        userRef.child('subscription').child('details').set(subscription, function () {
+          userRef.child('subscription').child('customer').set(customer, function () {
+            deferredStripe.resolve(subscription);
           });
+        });
 
-        }, deferredStripe.reject);
-    }
-
-  }, errorHandler);
+      }, deferredStripe.reject);
+  }
 
   deferredStripe.promise.then(function (subscription) {
     res.json(subscription);
@@ -433,34 +420,29 @@ app.post('/user/:userId/plan/:planId', function (req, res) {
 });
 
 app.delete('/user/:userId/subscription', function (req, res) {
-  var userId = req.params.userId,
-    deferredStripe = Q.defer(),
-    errorHandler = getErrorHandler(res);
+  var deferredStripe = Q.defer(),
+    errorHandler = getErrorHandler(res),
+    user = req.user,
+    userRef = req.userRef,
+    stripe,
+    subscription;
 
-  getUser(userId).then(function (result) {
-    var user = result.user,
-      userRef = result.userRef,
-      stripe,
-      subscription;
+  if (!user.subscription || !user.subscription.customer) {
+    deferredStripe.reject({error: 'Stripe customer missing'});
+  } else {
+    stripe = require('stripe')(stripeSk);
 
-    if (!user.subscription || !user.subscription.customer) {
-      deferredStripe.reject({error: 'Stripe customer missing'});
-    } else {
-      stripe = require('stripe')(stripeSk);
-
-      stripe.customers.cancelSubscription(user.subscription.customer.id, user.subscription.customer.subscription.id, {at_period_end: true}).then(function (response) {
-        subscription = response;
-        return stripe.customers.retrieve(user.subscription.customer.id);
-      }).then(function (customer) {
-          return userRef.child('subscription').child('customer').set(customer);
+    stripe.customers.cancelSubscription(user.subscription.customer.id, user.subscription.customer.subscription.id, {at_period_end: true}).then(function (response) {
+      subscription = response;
+      return stripe.customers.retrieve(user.subscription.customer.id);
+    }).then(function (customer) {
+        return userRef.child('subscription').child('customer').set(customer);
       }).then(function (response) {
-          userRef.child('subscription').child('details').set(subscription);
+        userRef.child('subscription').child('details').set(subscription);
       }).then(deferredStripe.resolve, deferredStripe.reject);
 
 
-    }
-
-  });
+  }
 
   deferredStripe.promise.then(function (data) {
     res.json(data);

@@ -3,6 +3,7 @@ var express = require('express'),
   Q = require('q'),
   Firebase = require('firebase'),
   env,
+  firebaseSecret,
   getErrorHandler = function (res) {
     return function (err) {
       res.send(500, err);
@@ -95,8 +96,9 @@ var USER_INVOICE_REGEX = /\/(\d+)\/?(invoice\/)?([^/]+)?/,
 
   };
 
-module.exports = function (incomingEnv) {
+module.exports = function (incomingEnv, incomingFirebaseSecret) {
   env = incomingEnv;
+  firebaseSecret = incomingFirebaseSecret;
 
   return {
     getErrorHandler: getErrorHandler,
