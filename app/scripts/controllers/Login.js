@@ -7,7 +7,7 @@ angular.module('quiverInvoiceApp')
         return message.replace(MESSAGE_REGEX, '');
       },
       forward = function () {
-        if ($state.previous) {
+        if ($state.previous && $state.previous.current.name.length > 0) {
           $state.go($state.previous.current.name, $state.previous.params);
         } else {
           $state.go('dashboard');

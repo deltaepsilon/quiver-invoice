@@ -37,97 +37,48 @@ app.get('/env', function (req, res) {
   res.json(env);
 });
 
+//quiver.userMiddleware attaches and user or invoice specified in the route to the req object.
 app.all('/user/*', quiver.userMiddleware);
 
-// Generic function to get user and invoice then execute an action
-var getUserAndInvoice = function (res, auth, userId, invoiceId, action, state) {
-  var userPath = env.firebase + '/users/' + userId,
-    invoicePath = userPath + '/invoices/' + invoiceId,
-    userRef = new Firebase(userPath),
-    invoiceRef = new Firebase(invoicePath),
-    deferredUser = Q.defer(),
-    deferredInvoice = Q.defer(),
-    deferredAction = Q.defer(),
-    errorHandler = getErrorHandler(res);
-
-  // Get user value
-  userRef.auth(auth, function (err, result) {
-    if (err) {
-      deferredUser.reject(err);
-    } else {
-      userRef.once('value', function (snapshot) {
-        deferredUser.resolve(snapshot.val());
-      });
-    }
-  });
-
-  // Get invoice value
-  deferredUser.promise.then(function () {
-    invoiceRef.auth(firebaseSecret, function (err, result) {
-
-      if (err) {
-        deferredInvoice.reject(err);
-      } else {
-        invoiceRef.once('value', function (snapshot) {
-          deferredInvoice.resolve(snapshot.val());
-        });
-      }
-    });
-  });
-
-  Q.all([deferredUser.promise, deferredInvoice.promise]).spread(function (user, invoice) {
-    action(user, invoice, userRef, invoiceRef, deferredAction);
-
-    deferredAction.promise.then(function () {
-      invoiceRef.child('details').child('state').set(state);
-    });
-  }, errorHandler);
-
-  return deferredAction.promise;
-};
-
 app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
-  var user,
-    invoice,
-    firebaseAuthToken = req.body.firebaseAuthToken,
+  var user = req.user,
+    userRef = req.userRef,
+    invoice = req.invoice,
+    invoiceRef = req.invoiceRef,
     deferredTemplate = Q.defer(),
     deferredEmail = Q.defer(),
     errorHandler = getErrorHandler(res),
-    action = function (aUser, aInvoice, userRef, invoiceRef, deferredAction) {
-      user = aUser;
-      invoice = aInvoice;
+    data = {
+      root: env.app + '/#',
+      user: user,
+      invoice: invoice,
+      params: req.params
+    },
+    template = 'invoice-recipient-email.txt';
 
-      var data = {
-          root: env.app + '/#',
-          user: user,
-          invoice: invoice,
-          params: req.params
-        },
-        template = 'invoice-recipient-email.txt';
 
-      switch (invoice.state) {
-        case 'sent':
-          template = 'invoice-recipient-email-reminder.txt';
-          break;
-        case 'paid':
-          return deferredTemplate.reject({error: 'Invoice has already been sent!'});
-          break;
-        default:
-          template = 'invoice-recipient-email.txt';
-          break;
-      }
+  // Render the email template
+  switch (invoice.state) {
+    case 'sent':
+      template = 'invoice-recipient-email-reminder.txt';
+      break;
+    case 'paid':
+      return deferredTemplate.reject({error: 'Invoice has already been sent!'});
+      break;
+    default:
+      template = 'invoice-recipient-email.txt';
+      break;
+  }
 
-      res.render(template, data, function (err, html) {
-        if (err) {
-          deferredAction.reject(err);
-        } else {
-          deferredAction.resolve(html);
-        }
+  res.render(template, data, function (err, html) {
+    if (err) {
+      deferredTemplate.reject(err);
+    } else {
+      deferredTemplate.resolve(html);
+    }
 
-      });
-    };
+  });
 
-  getUserAndInvoice(res, firebaseAuthToken, req.params.userId, req.params.invoiceId, action, 'sent').then(deferredTemplate.resolve);
 
 
   // Send email. See https://mandrillapp.com/api/docs/messages.JSON.html
@@ -159,16 +110,32 @@ app.post('/user/:userId/invoice/:invoiceId/send', function (req, res) {
     mandrill.messages.send(payload, deferredEmail.resolve, deferredEmail.reject);
   }, errorHandler);
 
+  //Save details state and respond
   deferredEmail.promise.then(function (response) {
-    res.json(response);
+    invoiceRef.child('details').child('state').set('sent', function (err) {
+      if (err) {
+        errorHandler(err);
+      } else {
+        res.json(response);
+      }
+    });
+
   }, errorHandler);
-
-
 
 });
 
 app.post('/payer/:payerId/user/:userId/invoice/:invoiceId/token', function (req, res) {
-  var token = req.body.token,
+  var cardToken = req.body.token,
+    payerToken = req.headers.authorization,
+    payerId = req.params.payerId,
+    userId = req.params.userId,
+    invoiceId = req.params.invoiceId,
+    payer,
+    payerRef,
+    user,
+    userRef,
+    invoice,
+    invoiceRef,
     action = function (user, invoice, userRef, invoiceRef, deferredAction) {
       invoiceRef.child('sk').set(user.settings.stripe.sk);
       invoiceRef.child('details').child('token').set(token);
@@ -176,8 +143,27 @@ app.post('/payer/:payerId/user/:userId/invoice/:invoiceId/token', function (req,
     },
     errorHandler = getErrorHandler(res);
 
-  getUserAndInvoice(res, firebaseSecret, req.params.userId, req.params.invoiceId, action, 'credit card').then(function (result) {
-    res.json(result);
+  getUser(payerId, payerToken).then(function (result) {
+    payer = result.user;
+    payerRef = result.userRef;
+    return getUser(userId, firebaseSecret);
+  }, errorHandler).then(function (result) {
+      user = result.user;
+      userRef = result.userRef;
+      return getInvoice(userId, invoiceId, firebaseSecret);
+  }, errorHandler).then(function (result) {
+      invoice = result.invoice;
+      invoiceRef = result.invoiceRef;
+
+      if (payer.email === invoice.details.recipient.email) {
+        invoiceRef.child('sk').set(user.settings.stripe.sk);
+        invoiceRef.child('details').child('token').set(cardToken);
+        invoiceRef.child('details').child('state').set('card');
+        res.json(cardToken);
+      } else {
+        errorHandler({"error": "Payer email does not match recipient email"});
+      }
+
   }, errorHandler);
 
 });

@@ -2,7 +2,9 @@ Greetings {{ invoice.details.recipient.name }},
 
 You have successfully paid invoice #{{ invoice.details.number }} from {{ user.email }} for ${{ total }}.
 
-You can review your invoice here: {{ root }}/users/{{ params.userId }}/invoices/{{ params.invoiceId }}/pay
+You can review your invoice here:
+
+{{ root }}/users/{{ params.userId }}/invoices/{{ params.invoiceId }}/pay
 
 Thanks!
 
