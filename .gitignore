@@ -6,3 +6,4 @@ app/lib
 .idea
 *env.js
 npm-debug.log
+*.tar.gz

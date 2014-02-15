@@ -1,8 +1,10 @@
 {
   "name": "quiver-invoice",
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "description": "Quiver Invoice is a straightforward invoice application. It lets you create invoices and accept payment through your own payment provider.",
+  "repository": "git@github.com:deltaepsilon/quiver-invoice.git",
   "dependencies": {
-    "grunt-s3": "~0.2.0-alpha.3",
+
     "express": "~3.4.8",
     "newrelic": "~1.2.0",
     "firebase": "~1.0.2",
@@ -48,7 +50,9 @@
     "karma-requirejs": "~0.2.1",
     "karma-phantomjs-launcher": "~0.1.1",
     "karma": "~0.10.9",
-    "karma-ng-html2js-preprocessor": "~0.1.0"
+    "karma-ng-html2js-preprocessor": "~0.1.0",
+    "grunt-s3": "~0.2.0-alpha.3",
+    "grunt-shell": "~0.6.4"
   },
   "engines": {
     "node": ">=0.8.0"

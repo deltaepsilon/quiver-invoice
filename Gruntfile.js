@@ -10,7 +10,6 @@
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
-  grunt.loadNpmTasks('grunt-s3');
 
   grunt.initConfig({
     appConfig: grunt.file.readJSON('./config/appConfig.json'),
@@ -234,7 +233,7 @@ module.exports = function (grunt) {
           src: [
             '*.{ico,png,txt}',
             '.htaccess',
-            'bower_components/**/*',
+            'lib/**/*',
             'images/{,*/}*.{gif,webp}',
             'styles/fonts/*'
           ]
@@ -346,8 +345,27 @@ module.exports = function (grunt) {
           }
         ]
       }
+    },
+    shell: {
+      tarDist: {
+        options: {
+          stdout: true
+        },
+        command: 'tar -zcvf dist.tar.gz dist && tar -zcvf middleware.tar.gz middleware'
+      },
+      copyDist: {
+        options: {
+          stdout: true
+        },
+        command: 'scp dist.tar.gz ' + process.env.QUIVER_INVOICE_TARGET + '/new.dist.tar.gz' +
+          ' && scp middleware.tar.gz ' + process.env.QUIVER_INVOICE_TARGET + '/new.middleware.tar.gz' +
+          ' && scp package.json ' + process.env.QUIVER_INVOICE_TARGET + '/new.package.json' +
+        ' && scp invoice-server.js ' + process.env.QUIVER_INVOICE_TARGET + '/new.invoice-server.js'
+      }
     }
   });
+
+  console.log('scp dist.tar.gz ' + process.env.QUIVER_INVOICE_TARGET);
 
   grunt.registerTask('server', function (target) {
     if (target === 'dist') {
@@ -380,9 +398,9 @@ module.exports = function (grunt) {
     'concat',
     'copy:dist',
 //    'cdnify',
-    'ngmin',
+//    'ngmin',
     'cssmin',
-    'uglify',
+//    'uglify',
     'rev',
     'usemin'
   ]);
@@ -395,6 +413,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('deploy', [
     'build',
-    's3'
+    'shell:tarDist',
+    'shell:copyDist'
   ]);
 };
