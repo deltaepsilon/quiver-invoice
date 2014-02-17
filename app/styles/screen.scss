@@ -12,7 +12,7 @@
 // Behold, here are all the Foundation components.
 @import
 //"../lib/foundation/scss/foundation/components/accordion",
-//"../lib/foundation/scss/foundation/components/alert-boxes",
+"../lib/foundation/scss/foundation/components/alert-boxes",
 "../lib/foundation/scss/foundation/components/block-grid",
 //"../lib/foundation/scss/foundation/components/breadcrumbs",
 "../lib/foundation/scss/foundation/components/button-groups",
@@ -55,6 +55,7 @@ $fi-path: "/lib/foundation-icon-fonts";
 // Theme
 @import "theme/color";
 @import "theme/font";
+@import "theme/form";
 
 // Imports
 @import "imports/mixins";

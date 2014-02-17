@@ -11,7 +11,20 @@
                 <h2>Credit Card</h2>
 
                 <p>
-                    Save a credit card, then select your plan.
+                    Save a credit card, then select your plan. We won't charge your card until you've selected your
+                    plan.
+                </p>
+                <br>
+                <p>
+                    You can cancel at any time during the trial period without being charged, and if you cancel
+                    an active subscription, you will retain access to Quiver Invoice through the end of your
+                    subscription.
+                </p>
+                <br>
+                <p>
+                    Email <a href="mailto:chris@quiver.is">chris@quiver.is</a> with any questions. My wife
+                    <a href="http://melissaesplin.com">Melissa Esplin</a> and I work on Quiver Invoice and other
+                    similar projects full time, so we're always available and happy to help.
                 </p>
 
                 <br>
@@ -57,7 +70,7 @@
                 </div>
                 <div class="large-6 small-12 column">
                     <label for="card-cvc">CVC Code</label>
-                    <input id="card-cvc" name="cvc" type="number" ng-model="newCard.cvc" ng-change="validateCVC(newCard.cvc)" required/>
+                    <input id="card-cvc" name="cvc" type="number" ng-model="newCard.cvc" ng-change="validateCVC(newCard.cvc)" placeholder="Verification code..." required/>
                 </div>
                 <div class="large-6 small-12 column">
                     <select class="pull-left" name="month" ng-model="newCard.exp_month" ng-options="months.indexOf(m) as m for m in months"  ng-change="validateMonth(newCard.exp_month)"></select>
@@ -168,21 +181,21 @@
 
         <form action name="contactForm">
             <div class="row">
-                <div class="large-6 small-12 column">
+                <div class="large-6 small-12 column required">
                     <label for="contact-first-name">First Name</label>
-                    <input id="contact-first-name" type="text" ng-model="user.settings.contact.first" required/>
+                    <input id="contact-first-name" type="text" ng-model="user.settings.contact.first" placeholder="First name..." required/>
                 </div>
-                <div class="large-6 small-12 column">
+                <div class="large-6 small-12 column required">
                     <label for="contact-last-name">Last Name</label>
-                    <input id="contact-last-name" type="text" ng-model="user.settings.contact.last" required/>
+                    <input id="contact-last-name" type="text" ng-model="user.settings.contact.last" placeholder="Last name..." required/>
                 </div>
-                <div class="large-12 column">
+                <div class="large-12 column required">
                     <label for="contact-email">Email</label>
-                    <input id="contact-email" type="email" ng-model="user.settings.contact.email" required/>
+                    <input id="contact-email" type="email" ng-model="user.settings.contact.email" placeholder="Email..." required/>
                 </div>
                 <div class="large-12 column">
                     <label for="contact-phone">Phone</label>
-                    <input id="contact-phone" type="text" ng-model="user.settings.contact.phone"/>
+                    <input id="contact-phone" type="text" ng-model="user.settings.contact.phone" placeholder="Phone number..."/>
                 </div>
             </div>
             <!--<div class="row column">-->
@@ -198,20 +211,20 @@
 
         <form action name="companyForm">
             <div class="row">
-                <div class="large-6 small-12 column">
+                <div class="large-6 small-12 column required">
                     <label for="company-name">Company Name</label>
-                    <input id="company-name" type="text" ng-model="user.settings.company.name" required/>
+                    <input id="company-name" type="text" ng-model="user.settings.company.name" placeholder="Company email..." required/>
                 </div>
 
                 <div class="large-6 small-12 column">
                     <label for="company-phone">Company Phone</label>
-                    <input id="company-phone" type="text" ng-model="user.settings.company.phone"/>
+                    <input id="company-phone" type="text" ng-model="user.settings.company.phone" placeholder="Company phone..."/>
                 </div>
             </div>
             <div class="row">
                 <div class="small-12 column">
                     <label for="company-address">Company Address</label>
-                    <textarea id="company-address" ng-model="user.settings.company.address"></textarea>
+                    <textarea id="company-address" ng-model="user.settings.company.address" placeholder="Company address..."></textarea>
                 </div>
             </div>
             <!--<div class="small-12 column">-->
@@ -257,14 +270,25 @@
                     </p>
 
                     <br>
+
+                    <h3>Changing Stripe Keys?</h3>
+                    <p>
+                        Stripe keys are saved to each individual invoice. You must update each invoice's publishable key
+                        if you wish to change Stripe API keys for already-created invoices. Also, secret keys are saved to
+                        each invoice as soon as the payer inputs credit card information for that invoice, at which point
+                        the invoice is frozen and cannot be edited.
+                    </p>
+
+                    <br>
                 </div>
-                <div class="small-6 large-12 column">
+
+                <div class="small-6 large-12 column required">
                     <label for="stripe-secret-key">Stripe Secret Key</label>
-                    <input id="stripe-secret-key" type="text" ng-model="user.settings.stripe.sk" required/>
+                    <input id="stripe-secret-key" type="text" ng-model="user.settings.stripe.sk" placeholder="sk_live_..." required/>
                 </div>
-                <div class="small-6 large-12 column">
+                <div class="small-6 large-12 column required">
                     <label for="stripe-public-key">Stripe Public Key</label>
-                    <input id="stripe-public-key" type="text" ng-model="user.settings.stripe.pk" required/>
+                    <input id="stripe-public-key" type="text" ng-model="user.settings.stripe.pk" placeholder="pk_live_..." required/>
                 </div>
                 <div class="small-12 column">
                     <button class="button right" ng-click="notify(user.$save)" ng-disabled="stripeForm.$invalid">Save Settings</button>

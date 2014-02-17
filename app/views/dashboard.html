@@ -4,32 +4,9 @@
 <br>
 
 <div class="padded-row centered">
-    <h2>Steps to Make Quiver Invoice Awesome</h2>
+    <h2>Profile is {{ percentComplete | percentage }} Complete</h2>
     <div>
-        <p>
-            Write an invoice creation page. It will let user's create invoices under /users/{ID}/invoices.
-            These invoices will be world-readable but only writeable by the user that created it and an admin
-            user who will mark it complete after processing the payment. That admin user's id will be hardcoded
-            into Firebase's rule set.
-        </p>
-        <br>
-        <p>
-            List invoices on this dashboard. Enable the user to do some basic inline edit as create and delete.
-            Full edits will probably go back to the same template that the invoice creator uses, but instead of
-            "create" it will have a "save" button.
-        </p>
-        <br>
-        <p>
-            Create an invoice payment view. It will display the invoice and provide a place to input credit card
-            details. When the server processes the payment, it will mark the invoice as paid, at which point the
-            rule set will not allow any more writing to that invoice. Reading will not be affected.
-        </p>
-        <br>
-        <p>
-            Next steps include enabling users to save credit cards to be used for payments on site. This will
-            involve tracking payments made and the associated invoices, thereby enabling users to pay each others'
-            invoices with saved payment information.
-        </p>
+        Fill in more details in <a ui-sref="settings">you settings</a> to complete your profile.
     </div>
 
 </div>

@@ -351,21 +351,22 @@ module.exports = function (grunt) {
         options: {
           stdout: true
         },
-        command: 'tar -zcvf dist.tar.gz dist && tar -zcvf middleware.tar.gz middleware'
+        command: 'tar -zcvf dist.tar.gz dist && tar -zcvf middleware.tar.gz middleware && tar -zcvf views.tar.gz views'
       },
       copyDist: {
         options: {
           stdout: true
         },
-        command: 'scp dist.tar.gz ' + process.env.QUIVER_INVOICE_TARGET + '/new.dist.tar.gz' +
-          ' && scp middleware.tar.gz ' + process.env.QUIVER_INVOICE_TARGET + '/new.middleware.tar.gz' +
-          ' && scp package.json ' + process.env.QUIVER_INVOICE_TARGET + '/new.package.json' +
-        ' && scp invoice-server.js ' + process.env.QUIVER_INVOICE_TARGET + '/new.invoice-server.js'
+        command: 'scp dist.tar.gz '     + process.env.QUIVER_INVOICE_TARGET + '/new.dist.tar.gz' +
+                  ' && scp middleware.tar.gz '  + process.env.QUIVER_INVOICE_TARGET + '/new.middleware.tar.gz' +
+                  ' && scp views.tar.gz '       + process.env.QUIVER_INVOICE_TARGET + '/new.views.tar.gz' +
+                  ' && scp package.json '       + process.env.QUIVER_INVOICE_TARGET + '/new.package.json' +
+                  ' && scp invoice-server.js '  + process.env.QUIVER_INVOICE_TARGET + '/new.invoice-server.js'
       }
     }
   });
 
-  console.log('scp dist.tar.gz ' + process.env.QUIVER_INVOICE_TARGET);
+  console.log('scp views.tar.gz '       + process.env.QUIVER_INVOICE_TARGET + '/new.views.tar.gz');
 
   grunt.registerTask('server', function (target) {
     if (target === 'dist') {

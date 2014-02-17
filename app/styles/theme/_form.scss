@@ -1,0 +1,9 @@
+form {
+  .required {
+    label {
+      &:after {
+        content: " *";
+      }
+    }
+  }
+}

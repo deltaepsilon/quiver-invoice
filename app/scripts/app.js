@@ -12,7 +12,7 @@ angular.module('quiverInvoiceApp', [
   'notifications'
 ])
   .run(function (cacheService, $state, $rootScope, _) {
-    cacheService.config(restangularProvider);
+//    cacheService.config(restangularProvider);
 
     $rootScope.$on('$stateChangeStart', function () {
       $state.previous = _.clone($state);
