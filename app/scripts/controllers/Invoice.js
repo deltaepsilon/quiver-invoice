@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('InvoiceCtrl', function ($scope, invoices, invoice, _, $state, $stateParams, notificationService, invoiceService, $timeout) {
+  .controller('InvoiceCtrl', function ($scope, invoices, invoice, _, $state, $stateParams, notificationService, invoiceService, subscription) {
     var indexItems = function () {
       var i = $scope.invoice.details.items.length;
 
@@ -29,6 +29,9 @@ angular.module('quiverInvoiceApp')
       return invoice.$save ? invoice.$save() : calculateTotal();
     },
     unbind;
+
+//    Subscription
+    $scope.subscription = subscription;
 
 //    Settings Stripe publishable key
     $scope.user.$on('loaded', function () {

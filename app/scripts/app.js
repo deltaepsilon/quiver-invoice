@@ -105,6 +105,9 @@ angular.module('quiverInvoiceApp', [
                   return invoiceService.get($stateParams.id);
                 }
 
+              },
+              subscription: function (subscriptionService) {
+                return subscriptionService.get();
               }
             }
           }

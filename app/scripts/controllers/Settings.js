@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('SettingsCtrl', function ($scope, notificationService, stripeService, subscriptionService, environmentService, plans, $filter, subscription) {
+  .controller('SettingsCtrl', function ($scope, $rootScope, $filter, notificationService, stripeService, subscriptionService, environmentService, userService, plans, subscription) {
     var env = environmentService.get(),
       setDefaults = function () {
         $scope.newCard = {
@@ -24,6 +24,11 @@ angular.module('quiverInvoiceApp')
 
     // Set up subscriptions
     $scope.subscription = subscription;
+
+    // Discount
+    if ($scope.user && $scope.user.subscription && $scope.user.subscription.customer && $scope.user.subscription.customer.discount) {
+      $scope.coupon = $scope.user.subscription.customer.discount.id;
+    }
 
     // Set up plans
     var i = plans.length;
@@ -77,11 +82,25 @@ angular.module('quiverInvoiceApp')
       });
     };
 
-    $scope.createSubscription = function (planId) {
-      subscriptionService.createSubscription($scope.loggedInUser.id, planId).then(function (subscription) {
+    $scope.createSubscription = function (planId, coupon) {
+      subscriptionService.createSubscription($scope.loggedInUser.id, planId, coupon).then(function (subscription) {
         notificationService.success('Subscription', 'Plan Saved');
         $scope.subscription = subscription;
+        $scope.coupon = null;
 
+        userService.get().then(function (user) {
+          $rootScope.user = user;
+        });
+
+      }, function (err) {
+        console.warn(err);
+
+        var message = err.message;
+
+        if (!message && err.data && err.data.message) {
+          message = err.data.message;
+        }
+        notificationService.error('Subscription', message);
       });
     };
 

@@ -104,16 +104,33 @@
                 <div ng-hide="!user.subscription.customer">
                     <div class="small-12 column">
 
-                        <h2>Select A Plan</h2>
+                        <h2>Select A Plan <i class="fi-heart" ng-click="showCoupon = true"></i></h2>
                         <br>
 
                         <label for="plan">Plan</label>
                         <select name="plan" id="plan" ng-model="plan.id" ng-change="planChange(plan.id)" ng-options="k as v for (k, v) in planOptions"></select>
                     </div>
 
+                    <div class="small-12 column" ng-show="showCoupon || user.subscription.customer.discount.coupon.id">
+                        <h2>Add a Coupon Code</h2>
+                        <p>
+                            You have a coupon code??? That's great! Add it to your subscription here. Make sure to
+                            update your subscription.
+                        </p>
+
+                        <br>
+
+                        <label for="coupon">
+                            <span>Discount Code</span>
+                            <span ng-show="user.subscription.customer.discount.coupon.id">: {{ user.subscription.customer.discount.coupon.id }}</span>
+                        </label>
+
+                        <input id="coupon" type="text" ng-model="coupon" ng-disabled="user.subscription.customer.discount.coupon.id" ng-hide="user.subscription.customer.discount.coupon.id" placeholder="Discount code..."/>
+                    </div>
+
                     <div class="small-12 column">
-                        <button class="button right" ng-click="createSubscription(plan.id)" ng-disabled="!subscription.cancel_at_period_end && (!plan || !user.subscription.token.id || !user.subscription.customer.id || plan.id == user.subscription.customer.subscription.plan.id)">
-                            <span ng-hide="subscription.empty || subscription.cancel_at_period_end">Change Subscription</span>
+                        <button class="button right" ng-click="createSubscription(plan.id, coupon)" ng-disabled="!subscription.cancel_at_period_end && !coupon && (!plan || !user.subscription.token.id || !user.subscription.customer.id || plan.id == user.subscription.customer.subscription.plan.id)">
+                            <span ng-hide="subscription.empty || subscription.cancel_at_period_end">Update Subscription</span>
                             <span ng-show="subscription.empty && !subscription.cancel_at_period_end">Create Subscription</span>
                             <span ng-show="subscription.cancel_at_period_end">Renew Subscription</span>
                         </button>

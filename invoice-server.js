@@ -385,7 +385,7 @@ app.get('/user/:userId/subscription', function (req, res) {
     stripe = require('stripe')(stripeSk),
     user = req.user,
     userRef = req.userRef,
-    missing = {"empty": "No subscriptions"};
+    missing = {"empty": true};
 
     if (!user.subscription || !user.subscription.customer) {
       deferredStripe.resolve(missing);
@@ -415,10 +415,12 @@ app.post('/user/:userId/plan/:planId', function (req, res) {
   var user = req.user,
     userRef = req.userRef,
     planId = req.params.planId,
+    coupon = req.body.coupon,
     deferredStripe = Q.defer(),
     errorHandler = getErrorHandler(res),
     stripe,
-    subscription;
+    subscription,
+    payload;
 
   if (!user.subscription || !user.subscription.token || !user.subscription.customer) {
     deferredStripe.reject({error: 'Stripe customer missing'});
@@ -426,7 +428,12 @@ app.post('/user/:userId/plan/:planId', function (req, res) {
 
     stripe = require('stripe')(stripeSk);
 
-    stripe.customers.updateSubscription(user.subscription.customer.id, {plan: planId}).then(function (response) {
+    payload = {plan: planId};
+    if (coupon) { // Add a coupon if appropriate
+      payload.coupon = coupon;
+    }
+
+    stripe.customers.updateSubscription(user.subscription.customer.id, payload).then(function (response) {
       subscription = response;
       return stripe.customers.retrieve(user.subscription.customer.id);
     }).then(function (customer) {

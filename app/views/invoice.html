@@ -139,15 +139,21 @@
 
             </div>
             <div class="row" ng-hide="invoice.details.state == 'paid'">
-                <div class="alert-box warning" ng-hide="user.settings.sk">
+                <div class="alert-box warning" ng-hide="user.settings.stripe.sk">
                     Your account does not have a Stripe Secret Key. Please save your Stripe Secret Key in your
                     <a ui-sref="settings">settings</a> to send an invoice.
                 </div>
 
+                <div class="alert-box" ng-show="subscription.empty">
+                    You cannot send an invoice without a valid subscription. Enter your payment information and
+                    select a plan in your <a ui-sref="settings">settings</a>.
+                </div>
+
+
                 <button class="button" ng-click="create(invoice)" ng-hide="id">Create</button>
                 <button class="button" ng-click="create(invoice, true)" ng-show="id">Copy</button>
                 <button class="button alert" ng-click="remove(id)" ng-show="id">Delete</button>
-                <button class="button secondary" ng-click="send(loggedInUser, id)" ng-show="id" ng-disabled="invoiceForm.$invalid || !invoice.details.total || !user.settings.stripe.sk">
+                <button class="button secondary" ng-click="send(loggedInUser, id)" ng-show="id" ng-disabled="invoiceForm.$invalid || !invoice.details.total || !user.settings.stripe.sk || subscription.empty">
                     <span ng-show="invoice.details.state == 'created'">Send Invoice</span>
                     <span ng-show="invoice.details.state == 'sent' || invoice.details.state == 'credit card'">Re-Send Invoice</span>
                 </button>

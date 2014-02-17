@@ -47,8 +47,8 @@ angular.module('quiverInvoiceApp')
         return deferred.promise;
       },
 
-      createSubscription: function (userId, planId) {
-        return Restangular.one('user', userId).one('plan', planId).post();
+      createSubscription: function (userId, planId, coupon) {
+        return Restangular.one('user', userId).one('plan', planId).post(null, { coupon: coupon });
       },
 
       cancelSubscription: function (userId) {
