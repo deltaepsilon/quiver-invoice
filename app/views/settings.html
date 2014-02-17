@@ -112,15 +112,17 @@
                     </div>
 
                     <div class="small-12 column" ng-show="showCoupon || user.subscription.customer.discount.coupon.id">
-                        <h2>Add a Coupon Code</h2>
-                        <p>
-                            You have a coupon code??? That's great! Add it to your subscription here. Make sure to
-                            update your subscription.
-                        </p>
+                        <div ng-hide="user.subscription.customer.discount.coupon.id">
+                            <h2>Add a Coupon Code</h2>
+                            <p>
+                                You have a coupon code??? That's great! Add it to your subscription here. Make sure to
+                                update your subscription.
+                            </p>
 
-                        <br>
+                            <br>
+                        </div>
 
-                        <label for="coupon">
+                        <label class="no-pointer" for="coupon">
                             <span>Discount Code</span>
                             <span ng-show="user.subscription.customer.discount.coupon.id">: {{ user.subscription.customer.discount.coupon.id }}</span>
                         </label>

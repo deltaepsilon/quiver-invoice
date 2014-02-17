@@ -6489,6 +6489,11 @@ hr {
   text-transform: capitalize;
 }
 
+/* line 105, modules/_global.scss */
+.no-pointer {
+  cursor: default;
+}
+
 /* line 1, modules/_nav.scss */
 .top-bar {
   margin-bottom: 2em;
