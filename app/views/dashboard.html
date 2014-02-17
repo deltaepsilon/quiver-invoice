@@ -3,19 +3,24 @@
 <br>
 <br>
 
-<div class="padded-row centered">
-    <h2>Profile is {{ percentComplete | percentage }} Complete</h2>
-    <div>
-        Fill in more details in <a ui-sref="settings">you settings</a> to complete your profile.
+<div class="small-12" ng-show="percentComplete < 1">
+    <div class="padded-row centered">
+        <h2>Profile is {{ percentComplete | percentage }} Complete</h2>
+        <div>
+            Fill in more details to <a ui-sref="settings">complete your profile</a>.
+        </div>
     </div>
 
+    <hr>
 </div>
 
 <br>
 
 <div class="centered">
-    <hr>
+
     <h2>Invoices Created</h2>
+
+    <input type="text" ng-model="invoiceFilterText" placeholder="Filter invoices..." ng-show="user.invoices.length > 2"/>
 
     <table class="small-12" ng-cloak>
         <thead>
@@ -26,25 +31,27 @@
             <th>Total</th>
             <th>Recipient</th>
             <th>Status</th>
-            <th>Action</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="(id, invoice) in user.invoices" ng-hide="id == 'next'">
+        <tr ng-repeat="(id, invoice) in filteredInvoices(invoiceFilterText)" ng-hide="id == 'next'">
             <td>{{ invoice.details.date | date }}</td>
-            <td>{{ invoice.details.project }}</td>
-            <td>{{ invoice.details.number }}</td>
-            <td>{{ invoice.details.total }}</td>
-            <td>{{ invoice.details.email }}</td>
-            <td>{{ invoice.details.state }}</td>
             <td>
-                <a ui-sref="invoice({id: id})">View</a>
+                <a ui-sref="invoice({id: id})">#{{ invoice.details.project }}</a>
             </td>
+            <td>
+                <a ui-sref="invoice({id: id})">#{{ invoice.details.number }}</a>
+            </td>
+            <td>{{ invoice.details.total | currency}}</td>
+            <td>
+                <a title="invoice.details.recipient.email" href="mailto:{{ invoice.details.recipient.email }}">{{ invoice.details.recipient.email }}</a>
+            </td>
+            <td class="capitalize">{{ invoice.details.state }}</td>
         </tr>
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="7">
+            <td colspan="6">
                 <a class="right" ui-sref="invoice({id: 'new'})">Create an invoice</a>
             </td>
         </tr>
