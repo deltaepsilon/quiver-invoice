@@ -1,14 +1,12 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('DashboardCtrl', function ($scope, _) {
-    console.log('user', $scope.user);
+  .controller('DashboardCtrl', function ($scope, $q, _, notificationService, invoiceService) {
     $scope.percentComplete = 1;
 
     $scope.user.$on('loaded', function () {
       $scope.percentComplete = 0;
       _.each($scope.user.settings, function (setting) {
-        console.log('setting', setting);
         _.each(setting, function (attribute) {
           if (attribute) {
             $scope.percentComplete += 1/9
@@ -73,5 +71,44 @@ angular.module('quiverInvoiceApp')
 
       return result;
     };
+
+    $scope.saveTags = function (id, tags) {
+      invoiceService.get(id).then(function (invoice) {
+        var deferred = $q.defer();
+
+        invoice.$on('loaded', function () {
+          var tagsArray = (tags) ? tags.split(",") : [],
+            i = tagsArray.length;
+
+          while (i--) {
+            tagsArray[i] = tagsArray[i].trim();
+          }
+
+          if (invoice.details) {
+            invoice.details.tags = tagsArray;
+          } else {
+            console.log('details not found', invoice, tagsArray);
+          }
+
+          invoice.$save().then(deferred.resolve, deferred.reject);
+        });
+
+
+
+        return deferred.promise;
+      }).then(function () {
+          notificationService.success('Invoice', 'Changes saved');
+      }, function (err) {
+          notificationService.error('Invoice', err);
+      });
+    };
+
+    $scope.setFilterText = function (text) {
+      $scope.invoiceFilterText = text;
+    };
+
+    $scope.$on('tagsInput', function () {
+      console.log('tagsInput changed', this, arguments);
+    });
 
   });

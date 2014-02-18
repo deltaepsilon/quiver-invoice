@@ -20,43 +20,78 @@
 
     <h2>Invoices Created</h2>
 
-    <input type="text" ng-model="invoiceFilterText" placeholder="Filter invoices..." ng-show="user.invoices.length > 2"/>
+    <div class="input-icon-wrapper">
+        <input id="invoice-filter-text" type="text" ng-model="invoiceFilterText" placeholder="Filter invoices..." tabindex="10"/>
+        <button class="input-icon icon-button fi-x" ng-click="invoiceFilterText = null" tabindex="10"></button>
+    </div>
 
-    <table class="small-12" ng-cloak>
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Project</th>
-            <th>Number</th>
-            <th>Total</th>
-            <th>Recipient</th>
-            <th>Status</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="(id, invoice) in filteredInvoices(invoiceFilterText)" ng-hide="id == 'next'">
-            <td>{{ invoice.details.date | date }}</td>
-            <td>
-                <a ui-sref="invoice({id: id})">#{{ invoice.details.project }}</a>
-            </td>
-            <td>
-                <a ui-sref="invoice({id: id})">#{{ invoice.details.number }}</a>
-            </td>
-            <td>{{ invoice.details.total | currency}}</td>
-            <td>
-                <a title="invoice.details.recipient.email" href="mailto:{{ invoice.details.recipient.email }}">{{ invoice.details.recipient.email }}</a>
-            </td>
-            <td class="capitalize">{{ invoice.details.state }}</td>
-        </tr>
-        </tbody>
-        <tfoot>
-        <tr>
-            <td colspan="6">
-                <a class="right" ui-sref="invoice({id: 'new'})">Create an invoice</a>
-            </td>
-        </tr>
-        </tfoot>
-    </table>
+
+    <div class="data-table small-12">
+        <div ng-repeat="(id, invoice) in filteredInvoices(invoiceFilterText)" ng-hide="id == 'next'" ng-controller="RepeatedInvoiceCtrl">
+            <div class="row header">
+                <div class="column small-10">
+                    <a class="left" ui-sref="invoice({id: id})" tabindex="10">#{{ invoice.details.number }}: {{ invoice.details.project }}</a>
+                    <span class="right">{{ invoice.details.date | date:'M/d/yy' }}</span>
+                </div>
+                <div class="column small-2 end">
+                    <button class="icon-button right capitalize" ng-click="setFilterText(invoice.details.state)" tabindex="10">{{ invoice.details.state }}</button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="column small-2">
+                    To:
+                </div>
+                <div class="column small-8">
+                    <a title="{{ invoice.details.recipient.email }}" href="mailto:{{ invoice.details.recipient.email }}" tabindex="10">{{ invoice.details.recipient.email }}</a>
+                </div>
+                <div class="column small-2">
+                    <span class="right"><strong>Total: </strong>{{ invoice.details.total | currency}}</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="column small-2">
+                    From:
+                </div>
+                <div class="column small-10">
+                    <a title="{{ invoice.details.sender.email }}" href="mailto:{{ invoice.details.sender.email }}" tabindex="10">{{ invoice.details.sender.email }}</a>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="column small-12">
+                    <label for="tags-input" class="inline pointer" ng-click="toggleTagsInput(tagsInputShow, invoice.details.tags)">
+                        <button class="icon-button fi-plus" ng-hide="tagsInputShow" tabindex="10"></button>
+                        <button class="icon-button fi-minus" ng-show="tagsInputShow" tabindex="10"></button>
+                        <span>Tags:</span>
+                    </label>
+                    <label for="invoice-filter-text" class="pointer inline" ng-click="setFilterText(tag)" ng-repeat="tag in invoice.details.tags" tabindex="10">{{ tag }}, </label>
+                </div>
+
+            </div>
+
+            <div class="row" ng-show="tagsInputShow">
+                <div class="column small-9">
+                    <input id="tags-input" type="text" ng-model="tags" placeholder="#best-client-evah, #might-not-pay, #remind..." tabindex="10"/>
+                </div>
+                <div class="column small-3" ng-click="tagsInputShow = false">
+                    <button class="tiny" ng-click="saveTags(id, tags)" tabindex="10">Save Tags</button>
+                </div>
+
+            </div>
+
+
+
+        </div>
+        <div class="row footer">
+            <div class="column small-12">
+                <a class="right" ui-sref="invoice({id: 'new'})" tabindex="11">Create an invoice</a>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 
