@@ -1,3 +1,5 @@
+require('newrelic');
+
 var express = require('express'),
   app = express(),
   engines = require('consolidate'),

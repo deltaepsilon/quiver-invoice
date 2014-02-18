@@ -7,3 +7,4 @@ app/lib
 *env.js
 npm-debug.log
 *.tar.gz
+newrelic.js
