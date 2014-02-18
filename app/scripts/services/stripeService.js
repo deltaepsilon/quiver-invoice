@@ -71,7 +71,15 @@ angular.module('quiverInvoiceApp')
       validateMonth: function (month) {
         var month = parseInt(month, 10);
         return month >= 1 && month <= 12;
+      },
+
+      isTest: function (pk) {
+        if (pk && typeof pk === 'string') {
+          return !!pk.match(/test/); // Failure to use the !! to force truthy or falsy will result in an infinite digest
+        }
+        return false;
       }
 
     };
+
   });

@@ -171,6 +171,12 @@
                     <div class="large-6 small-12 column">
                         <select class="pull-right" name="year" ng-model="newCard.exp_year" ng-options="year for year in years"></select>
                     </div>
+                    <div class="column small-12" ng-show="isTest(invoice.details.sender.pk)">
+                        <div class="alert-box warning">
+                            This invoice is using test API keys; therefore, you must use a fake card number
+                            (i.e., 4242424242424242). Real card numbers may not validate, and they will not be charged.
+                        </div>
+                    </div>
                     <div class="small-6 column">
                         <button class="button" ng-click="createToken(invoice, newCard)" ng-disabled="cardForm.$invalid || cardForm.number.$invalid || cardForm.cvc.$invalid || cardForm.exp_month.$invalid || cardForm.month.$pristine">
                             <span ng-hide="invoice.details.token">Add Card</span>

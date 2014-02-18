@@ -1,8 +1,10 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('DashboardCtrl', function ($scope, $q, _, notificationService, invoiceService) {
+  .controller('DashboardCtrl', function ($scope, $q, _, notificationService, invoiceService, stripeService) {
     $scope.percentComplete = 1;
+
+    $scope.isTest = stripeService.isTest;
 
     $scope.user.$on('loaded', function () {
       $scope.percentComplete = 0;

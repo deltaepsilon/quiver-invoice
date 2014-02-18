@@ -33,6 +33,8 @@ angular.module('quiverInvoiceApp')
 
     setDefaults();
 
+    $scope.isTest = stripeService.isTest;
+
     $scope.removeToken = function (invoice) {
       stripeService.removeToken($stateParams.userId, $stateParams.invoiceId, $scope.loggedInUser.id, invoice).then(function () {
         notificationService.success('Credit Card', 'Credit Card Deleted');
@@ -81,5 +83,7 @@ angular.module('quiverInvoiceApp')
         notificationService.error('Payment', (res.response) ? res.response.error.message : res.data.message);
       });
     };
+
+
 
   });
