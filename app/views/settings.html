@@ -319,4 +319,28 @@
 
     </div>
 
+    <hr>
+
+    <div class="row">
+        <h2>Password Reset</h2>
+
+        <form action name="passwordForm">
+            <div class="row">
+                <div class="small-12 large-6 column">
+                    <label for="old-password">Old Password</label>
+                    <input id="old-password" type="password" ng-model="password.old" placeholder="Old password..."/>
+                </div>
+                <div class="small-12 large-6 column">
+                    <label for="new-password">New Password</label>
+                    <input id="new-password" type="password" ng-model="password.new" placeholder="New password..."/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="small-12 column">
+                    <button class="button right" ng-click="changePassword(user, password)">Save Password</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
 </div>

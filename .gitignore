@@ -8,3 +8,4 @@ app/lib
 npm-debug.log
 *.tar.gz
 newrelic.js
+newrelic_agent.log

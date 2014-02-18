@@ -94,7 +94,9 @@ angular.module('quiverInvoiceApp')
         deferred.resolve(firebaseSimpleLogin.$logout());
 
         return deferred.promise;
-      }
+      },
+
+      change: firebaseSimpleLogin.$changePassword
 
     }
   });

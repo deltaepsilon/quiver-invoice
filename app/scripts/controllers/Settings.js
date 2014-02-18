@@ -113,4 +113,24 @@ angular.module('quiverInvoiceApp')
       });
     };
 
+    $scope.changePassword = function (user, password) {
+      userService.change(user.email, password.old, password.new).then(function () {
+        notificationService.success('Password', 'Password change successful');
+      }, function (err) {
+        if (err && err.code) {
+          var message = "Password reset failed.";
+
+          switch (err.code) {
+            case 'INVALID_PASSWORD':
+              message = "Invalid old password.";
+              break;
+            default:
+              console.warn('uncaught password failure code', err.code);
+              break;
+          }
+        }
+        notificationService.error('Password', message);
+      });
+    };
+
   });
