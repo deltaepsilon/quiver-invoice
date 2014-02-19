@@ -56,7 +56,7 @@ export MANDRILL_API_KEY="R0MU6eaPxOdobC1W_kFNhw"
 ```
 
 
-- Run ```grunt server``` to launch a development instance of the application. Otherwise, run ```grunt build``` to build, ```grunt s3deploy``` to build and deploy to Amazon S3, or ```grunt deploy``` to run tar the necessary files and scp them up via your scp target.
+- Run ```grunt server``` to launch a development instance of the application. Otherwise, run ```grunt build``` to build, ```grunt s3deploy``` to build and deploy to Amazon S3, or ```grunt deploy``` to tar the necessary files and scp them up to your server via your scp target.
 - ```grunt deploy``` runs a hand-rolled bash deploy script. It relies on a server directory structure similar to the following:
 
 ```
@@ -153,3 +153,5 @@ server {
 }
 
 ```
+
+Setting up the application for the first time is kinda heinous, but future deploys are as simple as running ```grunt deploy``` locally then logging into the server and running ```sh deploy``` from the application root.
