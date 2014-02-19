@@ -53,7 +53,7 @@ $table-margin-bottom: rem-calc(20) !default;
 
     .column {
       background: $table-head-bg;
-      padding: $table-head-padding;
+      padding: $table-head-padding !important;
       font-size: $table-head-font-size;
       font-weight: $table-head-font-weight;
       color: $table-head-font-color;
@@ -61,8 +61,12 @@ $table-margin-bottom: rem-calc(20) !default;
     }
   }
 
+  .row, .header, .column {
+    margin: 0 !important;
+  }
+
   .column {
-    padding: $table-row-padding;
+    padding: $table-row-padding !important;
     font-size: $table-row-font-size;
     color: $table-row-font-color;
 

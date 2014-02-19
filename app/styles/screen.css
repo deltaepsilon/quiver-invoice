@@ -6471,44 +6471,49 @@ a, .link {
 }
 
 /* line 96, modules/_global.scss */
+#body-view {
+  padding: 0 1rem 4rem;
+}
+
+/* line 100, modules/_global.scss */
 .padded-row {
   padding-left: 1rem;
   padding-right: 1rem;
 }
 
-/* line 101, modules/_global.scss */
+/* line 105, modules/_global.scss */
 .centered {
   margin-left: auto;
   margin-right: auto;
   max-width: 641px;
 }
 
-/* line 107, modules/_global.scss */
+/* line 111, modules/_global.scss */
 .lowercase {
   text-transform: lowercase;
 }
 
-/* line 111, modules/_global.scss */
+/* line 115, modules/_global.scss */
 .uppercase {
   text-transform: uppercase;
 }
 
-/* line 115, modules/_global.scss */
+/* line 119, modules/_global.scss */
 .capitalize {
   text-transform: capitalize;
 }
 
-/* line 119, modules/_global.scss */
+/* line 123, modules/_global.scss */
 .no-pointer {
   cursor: default;
 }
 
-/* line 123, modules/_global.scss */
+/* line 127, modules/_global.scss */
 .pointer {
   cursor: pointer;
 }
 
-/* line 127, modules/_global.scss */
+/* line 131, modules/_global.scss */
 .inline {
   display: inline;
 }
@@ -6667,49 +6672,54 @@ a, .link {
 }
 
 /* line 96, modules/_global.scss */
+#body-view {
+  padding: 0 1rem 4rem;
+}
+
+/* line 100, modules/_global.scss */
 .padded-row {
   padding-left: 1rem;
   padding-right: 1rem;
 }
 
-/* line 101, modules/_global.scss */
+/* line 105, modules/_global.scss */
 .centered {
   margin-left: auto;
   margin-right: auto;
   max-width: 641px;
 }
 
-/* line 107, modules/_global.scss */
+/* line 111, modules/_global.scss */
 .lowercase {
   text-transform: lowercase;
 }
 
-/* line 111, modules/_global.scss */
+/* line 115, modules/_global.scss */
 .uppercase {
   text-transform: uppercase;
 }
 
-/* line 115, modules/_global.scss */
+/* line 119, modules/_global.scss */
 .capitalize {
   text-transform: capitalize;
 }
 
-/* line 119, modules/_global.scss */
+/* line 123, modules/_global.scss */
 .no-pointer {
   cursor: default;
 }
 
-/* line 123, modules/_global.scss */
+/* line 127, modules/_global.scss */
 .pointer {
   cursor: pointer;
 }
 
-/* line 127, modules/_global.scss */
+/* line 131, modules/_global.scss */
 .inline {
   display: inline;
 }
 
-/* line 80, modules/_data-table.scss */
+/* line 84, modules/_data-table.scss */
 .data-table {
   background: white;
   margin-bottom: 1.25rem;
@@ -6724,25 +6734,34 @@ a, .link {
 .data-table .header .column, .data-table h1 .column, .data-table h2 .column, .data-table h3 .column, .data-table h4 .column, .data-table h5 .column, .data-table h6 .column,
 .data-table .footer .column {
   background: whitesmoke;
-  padding: 0.5rem 0.625rem 0.625rem;
+  padding: 0.5rem 0.625rem 0.625rem !important;
   font-size: 0.875rem;
   font-weight: bold;
   color: #222222;
   text-align: left;
 }
 /* line 64, modules/_data-table.scss */
+.data-table .row, .data-table .header, .data-table h1, .data-table h2, .data-table h3, .data-table h4, .data-table h5, .data-table h6, .data-table .column {
+  margin: 0 !important;
+}
+/* line 68, modules/_data-table.scss */
 .data-table .column {
-  padding: 0.5625rem 0.625rem;
+  padding: 0.5625rem 0.625rem !important;
   font-size: 0.875rem;
   color: #222222;
   line-height: 1.125rem;
 }
 
 /* line 1, modules/_form.scss */
+fieldset {
+  min-width: 100%;
+}
+
+/* line 5, modules/_form.scss */
 .input-icon-wrapper {
   position: relative;
 }
-/* line 4, modules/_form.scss */
+/* line 8, modules/_form.scss */
 .input-icon-wrapper .input-icon {
   position: absolute;
   top: 0.5rem;

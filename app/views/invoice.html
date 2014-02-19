@@ -72,73 +72,85 @@
             <div class="row" ng-hide="invoice.details.token || invoice.details.state == 'paid'">
                 <h2>Itemized Invoice</h2>
 
-                <table class="invoice-items small-12">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Quantity</th>
-                        <th>Rate</th>
-                        <th>Amount</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr class="item-row" ng-repeat="item in invoice.details.items">
-                        <td>{{ item.id }}</td>
-                        <td>
-                            <input type="text" ng-model="item.name" required/>
-                        </td>
-                        <td>
-                            <input type="text" ng-model="item.description"/>
-                        </td>
-                        <td>
-                            <input type="number" ng-model="item.quantity" ng-change="calculateTotal()" required/>
-                        </td>
-                        <td>
-                            <input type="number" ng-model="item.rate" ng-change="calculateTotal()" required/>
-                        </td>
-                        <td>
-                            <span class="item-amount">{{ item.quantity * item.rate | currency}}</span>
-                        </td>
-                        <td>
-                            <button class="button tiny alert" ng-click="removeItem(item)">Remove</button>
-                        </td>
-                    </tr>
-                    <tr class="new-item-row item-row">
-                        <td></td>
-                        <td>
-                            <input type="text" ng-model="newItem.name"/>
-                        </td>
-                        <td>
-                            <input type="text" ng-model="newItem.description"/>
-                        </td>
-                        <td>
-                            <input type="number" ng-model="newItem.quantity"/>
-                        </td>
-                        <td>
-                            <input type="number" ng-model="newItem.rate"/>
-                        </td>
-                        <td>
-                            <span id="item-amount">{{ newItem.quantity * newItem.rate | currency}}</span>
-                        </td>
-                        <td>
-                            <button class="button tiny" ng-click="addItem(newItem)" ng-disabled="!newItem.name || !newItem.quantity || !newItem.rate">Add</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        <td class="background-white" colspan="5"></td>
-                        <td colspan="2">
+                <div class="data-table small-12">
+                    <div ng-repeat="item in invoice.details.items">
+                        <div class="row header">
+                            <div class="column small-12">
+                                Item #{{ item.id }}
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="column small-3">
+                                <label for="name-{{ $index }}">Name</label>
+                                <input id="name-{{ $index }}" type="text" ng-model="item.name" placeholder="Name..." required/>
+                            </div>
+                            <div class="column small-9">
+                                <label for="description-{{ $index }}">Description</label>
+                                <input id="description-{{ $index }}" type="text" ng-model="item.description" placeholder="Description..."/>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="column small-4">
+                                <label for="quantity-{{ $index }}">Quantity</label>
+                                <input id="quantity-{{ $index }}" type="number" ng-model="item.quantity" ng-change="calculateTotal()" required/>
+                            </div>
+                            <div class="column small-4">
+                                <label for="rate-{{ $index }}">Rate</label>
+                                <input id="rate-{{ $index }}" type="number" ng-model="item.rate" ng-change="calculateTotal()" required/>
+                            </div>
+                            <div class="column small-4">
+                                <label for="action-{{ $index }}">&nbsp;</label>
+                                <button id="action-{{ $index }}" class="button tiny alert" ng-click="removeItem(item)">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="new-item">
+                        <div class="row header">
+                            <div class="column small-12">
+                                New Item
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="column small-3">
+                                <label for="name">Name</label>
+                                <input id="name" type="text" ng-model="newItem.name"/>
+                            </div>
+                            <div class="column small-9">
+                                <label for="description">Description</label>
+                                <input id="description" type="text" ng-model="newItem.description"/>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="column small-4">
+                                <label for="quantity">Quantity</label>
+                                <input id="quantity" type="number" ng-model="newItem.quantity"/>
+                            </div>
+                            <div class="column small-4">
+                                <label for="rate">Rate</label>
+                                <input id="rate" type="number" ng-model="newItem.rate"/>
+                            </div>
+                            <div class="column small-4">
+                                <label for="action">&nbsp;</label>
+                                <button id="action" class="button tiny" ng-click="addItem(newItem)" ng-disabled="!newItem.name || !newItem.quantity || !newItem.rate">Add</button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row footer">
+
+                        <div class="column small-6 medium-3">
                             <span class="left">Total:</span>
                             <span class="right">{{ invoice.details.total | currency }}</span>
-                        </td>
-                    </tr>
-                    </tfoot>
-                </table>
+                        </div>
+                    </div>
 
+                </div>
 
             </div>
             <div class="row" ng-hide="invoice.details.state == 'paid'">
@@ -158,9 +170,9 @@
                 <button class="button alert" ng-click="remove(id)" ng-show="id">Delete</button>
                 <button class="button secondary" ng-click="send(loggedInUser, id)" ng-show="id" ng-disabled="invoiceForm.$invalid || !invoice.details.total || !user.settings.stripe.sk || subscription.empty">
                     <span ng-show="invoice.details.state == 'created'">Send Invoice</span>
-                    <span ng-show="invoice.details.state == 'sent' || invoice.details.state == 'credit card'">Re-Send Invoice</span>
+                    <span ng-show="invoice.details.state == 'sent' || invoice.details.state == 'card'">Re-Send Invoice</span>
                 </button>
-                <a class="button secondary" ng-show="invoice.details.state == 'sent' || invoice.details.state == 'credit card'" ui-sref="pay({userId: loggedInUser.id, invoiceId: id})">View Invoice</a>
+                <a class="button secondary" ng-show="invoice.details.state == 'sent' || invoice.details.state == 'card'" ui-sref="pay({userId: loggedInUser.id, invoiceId: id})">View Invoice</a>
             </div>
         </fieldset>
 
@@ -170,36 +182,51 @@
     <div class="row centered" ng-show="invoice.details.token || invoice.details.state == 'paid'">
         <h2>Itemized Invoice</h2>
 
-        <table class="small-12">
-            <thead>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Quantity</th>
-                <th>Rate</th>
-                <th>Amount</th>
-            </thead>
-            <tbody>
-                <tr ng-repeat="item in invoice.details.items">
-                    <td>{{ item.id }}</td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.description }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.rate }}</td>
-                    <td>{{ item.quantity * item.rate | currency }}</td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td class="background-white" colspan="4"></td>
-                    <td colspan="2">
-                        <span class="left">Total:</span>
-                        <span class="right">{{ invoice.details.total | currency }}</span>
-                    </td>
-                </tr>
-            </tfoot>
+        <div class="data-table small-12">
+            <div ng-repeat="item in invoice.details.items">
+                <div class="row header">
+                    <div class="column small-12">
+                        Item #{{ item.id }}
+                    </div>
 
-        </table>
+                </div>
+
+                <div class="row">
+                    <div class="column small-3">
+                        <label for="name-{{ $index }}-static">Name</label>
+                        <span id="name-{{ $index }}-static">{{ item.name }}</span>
+                    </div>
+                    <div class="column small-9">
+                        <label for="description-{{ $index }}-static">Description</label>
+                        <span id="description-{{ $index }}-static">{{ item.description }}</span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="column small-3">
+                        <label for="quantity-{{ $index }}-static">Quantity</label>
+                        <span id="quantity-{{ $index }}-static">{{ item.quantity }}</span>
+                    </div>
+                    <div class="column small-6">
+                        <label for="rate-{{ $index }}-static">Rate</label>
+                        <span id="rate-{{ $index }}-static">{{ item.rate }}</span>
+                    </div>
+                    <div class="column small-3 text-right">
+                        <label for="total-{{ $index }}-static">Total</label>
+                        <span id="total-{{ $index }}-static">{{ item.quantity * item.rate | currency }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row footer">
+
+                <div class="column small-6 medium-3 right">
+                    <span class="left">Total:</span>
+                    <span class="right">{{ invoice.details.total | currency }}</span>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <div class="centered" ng-show="invoice.charge">

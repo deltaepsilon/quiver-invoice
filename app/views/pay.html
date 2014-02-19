@@ -41,12 +41,14 @@
         <div class="row">
             <h2 class="centered">Sender</h2>
 
-            <div class="small-6 column">
+            <div class="small-12 medium-6 column">
+                <br>
                 <label for="invoice-sender-name">Name</label>
                 <span id="invoice-sender-name">{{ invoice.details.sender.name }}</span>
             </div>
 
-            <div class="small-6 column">
+            <div class="small-12 medium-6 column">
+                <br>
                 <label for="invoice-sender-email">Email</label>
                 <a id="invoice-sender-email" href="mailto:{{ invoice.details.sender.email }}">{{ invoice.details.sender.email }}</a>
             </div>
@@ -63,12 +65,14 @@
         <div class="row">
             <h2 class="centered">Recipient</h2>
 
-            <div class="small-6 column">
+            <div class="small-12 medium-6 column">
+                <br>
                 <label for="invoice-recipient-name">Name</label>
                 <span id="invoice-recipient-name">{{ invoice.details.recipient.name }}</span>
             </div>
 
-            <div class="small-6 column">
+            <div class="small-12 medium-6 column">
+                <br>
                 <label for="invoice-recipient-email">Email</label>
                 <a id="invoice-recipient-email" href="mailto:{{ invoice.details.recipient.email }}">{{ invoice.details.recipient.email }}</a>
             </div>
@@ -85,37 +89,51 @@
         <div class="row">
             <h2>Itemized Invoice</h2>
 
-            <table class="invoice-items small-12">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Quantity</th>
-                    <th>Rate</th>
-                    <th>Amount</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="item-row" ng-repeat="item in invoice.details.items">
-                    <td>{{ item.id }}</td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.description }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.rate }}</td>
-                    <td>{{ item.quantity * item.rate | currency}}</td>
-                </tr>
-                </tbody>
-                <tfoot>
-                <tr>
-                    <td class="background-white" colspan="4"></td>
-                    <td colspan="2">
+            <div class="data-table small-12">
+                <div ng-repeat="item in invoice.details.items">
+                    <div class="row header">
+                        <div class="column small-12">
+                            Item #{{ item.id }}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="column small-3">
+                            <label for="name-{{ $index }}-static">Name</label>
+                            <span id="name-{{ $index }}-static">{{ item.name }}</span>
+                        </div>
+                        <div class="column small-9">
+                            <label for="description-{{ $index }}-static">Description</label>
+                            <span id="description-{{ $index }}-static">{{ item.description }}</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="column small-3">
+                            <label for="quantity-{{ $index }}-static">Quantity</label>
+                            <span id="quantity-{{ $index }}-static">{{ item.quantity }}</span>
+                        </div>
+                        <div class="column small-6">
+                            <label for="rate-{{ $index }}-static">Rate</label>
+                            <span id="rate-{{ $index }}-static">{{ item.rate }}</span>
+                        </div>
+                        <div class="column small-3 text-right">
+                            <label for="total-{{ $index }}-static">Total</label>
+                            <span id="total-{{ $index }}-static">{{ item.quantity * item.rate | currency }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row footer">
+
+                    <div class="column small-6 medium-3 right">
                         <span class="left">Total:</span>
                         <span class="right">{{ invoice.details.total | currency }}</span>
-                    </td>
-                </tr>
-                </tfoot>
-            </table>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <hr>
@@ -124,72 +142,79 @@
             <div class="row">
                 <h2>Credit Card</h2>
 
-                <table class="card-details small-12" ng-show="invoice.details.token">
-                    <thead>
-                    <tr>
-                        <th>Card Number</th>
-                        <th>Card Type</th>
-                        <th>Expiration Month</th>
-                        <th>Expiration Year</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>******{{ invoice.details.token.card.last4 }}</td>
-                        <td>{{ invoice.details.token.card.type }}</td>
-                        <td>{{ invoice.details.token.card.exp_month }}</td>
-                        <td>{{ invoice.details.token.card.exp_year }}</td>
-                        <td>
-                            <a ng-click="removeToken(invoice)">Remove</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        <td colspan="5"></td>
-                    </tr>
-                    </tfoot>
-                </table>
+                <div class="data-table small-12">
+                    <div class="row header">
+                        <div class="column small-12">
+                            {{ invoice.details.token.card.type }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="column small-3">
+                            <label for="card-number-static">Number</label>
+                            <span id="card-number-static">******{{ invoice.details.token.card.last4 }}</span>
+                        </div>
+                        <div class="column small-3">
+                            <label for="card-month">Month</label>
+                            <span id="card-month">{{ invoice.details.token.card.exp_month }}</span>
+                        </div>
+                        <div class="column small-3">
+                            <label for="card-year">Year</label>
+                            <span id="card-year">{{ invoice.details.token.card.exp_year }}</span>
+                        </div>
+                        <div class="column small-3">
+                            <label for="card-action">&nbsp;</label>
+                            <a id="card-action" class="right" ng-click="removeToken(invoice)">Remove</a>
+                        </div>
+                    </div>
+
+                </div>
 
                 <br>
 
                 <form action name="cardForm">
 
-                    <div class="large-6 small-12 column">
-                        <label for="card-number">Card Number</label>
-                        <input id="card-number" class="large-9" name="number" type="number" ng-model="newCard.number" placeholder="Card number..." ng-change="validateCardNumber(newCard.number)" required=""/>
-                    </div>
-                    <div class="large-6 small-12 column">
-                        <label for="card-cvc">CVC Code</label>
-                        <input id="card-cvc" name="cvc" type="number" ng-model="newCard.cvc" ng-change="validateCVC(newCard.cvc)" required/>
-                    </div>
-                    <div class="large-6 small-12 column">
-                        <select class="pull-left" name="month" ng-model="newCard.exp_month" ng-options="months.indexOf(m) as m for m in months"  ng-change="validateMonth(newCard.exp_month)"></select>
-
-                    </div>
-                    <div class="large-6 small-12 column">
-                        <select class="pull-right" name="year" ng-model="newCard.exp_year" ng-options="year for year in years"></select>
-                    </div>
-                    <div class="column small-12" ng-show="isTest(invoice.details.sender.pk)">
-                        <div class="alert-box warning">
-                            This invoice is using test API keys; therefore, you must use a fake card number
-                            (i.e., 4242424242424242). Real card numbers may not validate, and they will not be charged.
+                    <div class="row">
+                        <div class="medium-6 small-12 column">
+                            <label for="card-number">Card Number</label>
+                            <input id="card-number" class="large-9" name="number" type="number" ng-model="newCard.number" placeholder="Card number..." ng-change="validateCardNumber(newCard.number)" required=""/>
+                        </div>
+                        <div class="medium-6 small-12 column">
+                            <label for="card-cvc">CVC Code</label>
+                            <input id="card-cvc" name="cvc" type="number" ng-model="newCard.cvc" ng-change="validateCVC(newCard.cvc)" required/>
                         </div>
                     </div>
-                    <div class="small-6 column">
-                        <button class="button" ng-click="createToken(invoice, newCard)" ng-disabled="cardForm.$invalid || cardForm.number.$invalid || cardForm.cvc.$invalid || cardForm.exp_month.$invalid || cardForm.month.$pristine">
-                            <span ng-hide="invoice.details.token">Add Card</span>
-                            <span ng-show="invoice.details.token">Replace Card</span>
-                        </button>
-
-                        <a href="https://stripe.com/help/security" class="background-powered-by-stripe" rel="nofollow" target="_blank"></a>
+                    <div class="row">
+                        <div class="medium-6 small-12 column">
+                            <select class="pull-left" name="month" ng-model="newCard.exp_month" ng-options="months.indexOf(m) as m for m in months"  ng-change="validateMonth(newCard.exp_month)"></select>
+                        </div>
+                        <div class="medium-6 small-12 column">
+                            <select class="pull-right" name="year" ng-model="newCard.exp_year" ng-options="year for year in years"></select>
+                        </div>
                     </div>
-                    <div class="small-6 column">
-                        <div class="form-error" ng-show="cardForm.number.$invalid && cardForm.number.$dirty">Invalid card number</div>
-                        <div class="form-error" ng-show="cardForm.cvc.$invalid && cardForm.cvc.$dirty">Invalid security code</div>
-                        <div class="form-error" ng-show="cardForm.month.$invalid && cardForm.month.$dirty">Invalid month</div>
-                        <div class="form-error" ng-show="cardForm.invalidCard">Invalid card details</div>
+                    <div class="row" ng-show="isTest(invoice.details.sender.pk)">
+                        <div class="column small-12">
+                            <div class="alert-box warning">
+                                This invoice is using test API keys; therefore, you must use a fake card number
+                                (i.e., 4242424242424242). Real card numbers may not validate, and they will not be charged.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="small-6 column">
+                            <button class="button" ng-click="createToken(invoice, newCard)" ng-disabled="cardForm.$invalid || cardForm.number.$invalid || cardForm.cvc.$invalid || cardForm.exp_month.$invalid || cardForm.month.$pristine">
+                                <span ng-hide="invoice.details.token">Add Card</span>
+                                <span ng-show="invoice.details.token">Replace Card</span>
+                            </button>
+
+                            <a href="https://stripe.com/help/security" class="background-powered-by-stripe" rel="nofollow" target="_blank"></a>
+                        </div>
+                        <div class="small-6 column">
+                            <div class="form-error" ng-show="cardForm.number.$invalid && cardForm.number.$dirty">Invalid card number</div>
+                            <div class="form-error" ng-show="cardForm.cvc.$invalid && cardForm.cvc.$dirty">Invalid security code</div>
+                            <div class="form-error" ng-show="cardForm.month.$invalid && cardForm.month.$dirty">Invalid month</div>
+                            <div class="form-error" ng-show="cardForm.invalidCard">Invalid card details</div>
+                        </div>
                     </div>
 
                 </form>
