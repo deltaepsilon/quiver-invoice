@@ -14,7 +14,20 @@ quiver-invoice
         "users": {
           "$user": {
             ".read": "$user == auth.id",
-            ".write": "$user == auth.id"
+            ".write": "$user == auth.id",
+            "invoices": {
+              "$invoices": {
+                "sk": {
+                  ".read": false
+                },
+                "details": {
+                  ".read": "auth.email == data.child('recipient').child('email').val()"
+                },
+                "charge": {
+                  ".read": "auth.email == data.parent().child('details').child('recipient').child('email').val()"
+                }
+              }
+            }
           }
         }
     }
