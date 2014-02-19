@@ -1,5 +1,8 @@
 <h1 class="padded-row text-center">
-    <span ng-show="id">Edit Invoice</span>
+    <span ng-show="id">
+        <span ng-hide="invoice.details.state == 'paid'">Edit Invoice</span>
+        <span ng-show="invoice.details.state == 'paid'">Review Invoice</span>
+    </span>
     <span ng-hide="id">Create Invoice</span>
 </h1>
 
@@ -66,7 +69,7 @@
 
             <hr>
 
-            <div class="row" ng-hide="invoice.details.token">
+            <div class="row" ng-hide="invoice.details.token || invoice.details.state == 'paid'">
                 <h2>Itemized Invoice</h2>
 
                 <table class="invoice-items small-12">
@@ -164,7 +167,7 @@
 
     </form>
 
-    <div class="row centered" ng-show="invoice.details.token">
+    <div class="row centered" ng-show="invoice.details.token || invoice.details.state == 'paid'">
         <h2>Itemized Invoice</h2>
 
         <table class="small-12">

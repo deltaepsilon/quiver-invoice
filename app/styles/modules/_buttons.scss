@@ -1,3 +1,7 @@
+.link {
+  @extend a;
+}
+
 .icon-button, .icon-button:hover, .icon-button:focus {
   background-color: transparent;
   color: inherit;

@@ -79,6 +79,20 @@ hr {
 
 }
 
+a {
+  @extend .text-gray3;
+
+  text-decoration: underline;
+
+  &:hover {
+    @extend .text-green3;
+  }
+
+  &:visited {
+    @extend .text-green3;
+  }
+}
+
 .padded-row {
   padding-left: 1rem;
   padding-right: 1rem;

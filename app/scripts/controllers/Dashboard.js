@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('DashboardCtrl', function ($scope, $q, _, notificationService, invoiceService, stripeService) {
+  .controller('DashboardCtrl', function ($scope, $rootScope, $q, _, notificationService, invoiceService, stripeService, userService) {
     $scope.percentComplete = 1;
 
     $scope.isTest = stripeService.isTest;
@@ -129,6 +129,19 @@ angular.module('quiverInvoiceApp')
 
     $scope.setPaymentText = function (text) {
       $scope.paymentFilterText = text;
+    };
+
+    $scope.markAsPaid = function (id) {
+      invoiceService.get(id).then(function (invoice) {
+        invoice.$child('details').$child('state').$set('paid').then(function () {
+          notificationService.success('Invoice', 'Marked as paid');
+          userService.get().then(function (user) {
+            $rootScope.user = user;
+          });
+        }, function (err) {
+          notificationService.error('Invoice', err);
+        });
+      });
     };
 
   });

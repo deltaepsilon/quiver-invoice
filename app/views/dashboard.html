@@ -46,7 +46,7 @@
                     <a title="{{ invoice.details.recipient.email }}" href="mailto:{{ invoice.details.recipient.email }}" tabindex="10">{{ invoice.details.recipient.email }}</a>
                 </div>
                 <div class="column small-2">
-                    <span class="right"><strong>Total: </strong>{{ invoice.details.total | currency}}</span>
+                    <span class="right text-right"><strong>Total: </strong>{{ invoice.details.total | currency}}</span>
                 </div>
             </div>
 
@@ -60,13 +60,17 @@
             </div>
 
             <div class="row">
-                <div class="column small-12">
+                <div class="column small-10">
                     <label for="tags-input" class="inline pointer" ng-click="toggleTagsInput(tagsInputShow, invoice.details.tags)">
                         <button class="icon-button fi-plus" ng-hide="tagsInputShow" tabindex="10"></button>
                         <button class="icon-button fi-minus" ng-show="tagsInputShow" tabindex="10"></button>
                         <span>Tags:</span>
                     </label>
                     <label for="invoice-filter-text" class="pointer inline tag" ng-click="setFilterText(tag)" ng-repeat="tag in invoice.details.tags" tabindex="10">{{ tag }}</label>
+                </div>
+
+                <div class="column small-2">
+                    <span class="link" ng-click="markAsPaid(id)" ng-hide="invoice.details.state == 'paid'">Mark As Paid</span>
                 </div>
 
             </div>
@@ -131,7 +135,7 @@
                     <a title="{{ invoice.details.recipient.email }}" href="mailto:{{ invoice.details.recipient.email }}" tabindex="20">{{ invoice.details.recipient.email }}</a>
                 </div>
                 <div class="column small-2">
-                    <span class="right"><strong>Total: </strong>{{ invoice.details.total | currency}}</span>
+                    <span class="right text-right"><strong>Total: </strong>{{ invoice.details.total | currency}}</span>
                 </div>
             </div>
 
