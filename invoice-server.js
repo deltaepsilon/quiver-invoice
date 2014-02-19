@@ -277,13 +277,20 @@ app.post('/payer/:payerId/user/:userId/invoice/:invoiceId/pay', function (req, r
 
 //  Add to paying user's payments array
   deferredStripe.promise.then(function (charge) {
-    paymentsRef.auth(firebaseSecret, function (err, result) {
-      // Add to user's payments
-      invoice.charge = charge;
-      // Strip
-      invoice.details.tags = [];
-      paymentsRef.push(_.omit(invoice, ['sk']));
+    // Update invoice to make absolutely certain that we're saving the most recent copy.
+    getInvoice(userId, invoiceId, firebaseSecret).then(function (result) {
+      invoice = result.invoice;
+      invoiceRef = result.invoiceRef;
+
+      invoice.charge = charge; // Add to user's payments
+      invoice.details.tags = []; // Strip requestor's tags
+
+      paymentsRef.auth(firebaseSecret, function (err, result) {
+        paymentsRef.push(_.omit(invoice, ['sk']));
+      });
+
     });
+
   });
 
 
