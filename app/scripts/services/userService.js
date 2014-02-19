@@ -6,7 +6,6 @@ angular.module('quiverInvoiceApp')
       firebase = new Firebase(env.firebase),
       firebaseSimpleLogin = $firebaseSimpleLogin(firebase),
       usersRef = $firebase(new Firebase(env.firebase + '/users')),
-      Handler = environmentService.Handler,
       getCurrentUser = function () {
         var deferred = $q.defer();
 
