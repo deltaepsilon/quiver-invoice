@@ -6529,7 +6529,7 @@ hr {
 .dr-notification-container {
   position: fixed;
   top: initial;
-  right: 0;
+  right: initial;
   bottom: 0;
   left: 0;
   text-align: center;
@@ -6749,4 +6749,13 @@ hr {
   font-weight: inherit !important;
   margin: 0;
   padding: 0;
+}
+
+/* line 2, modules/_dashboard.scss */
+.tag:after {
+  content: ", ";
+}
+/* line 7, modules/_dashboard.scss */
+.tag:last-of-type:after {
+  visibility: hidden;
 }

@@ -98,6 +98,21 @@ angular.module('quiverInvoiceApp')
         return deferred.promise;
       },
 
+      getPayments: function (id) {
+        var deferred = $q.defer();
+
+        userService.getCurrentUser().then(function (user) {
+          var path = env.firebase + '/users/' + user.id + '/payments';
+          if (id) {
+            path += '/' + id;
+
+          }
+          deferred.resolve($firebase(new Firebase(path)));
+        });
+
+        return deferred.promise;
+      },
+
       create: function (invoice, copy) {
         invoice.details.state = 'created';
 

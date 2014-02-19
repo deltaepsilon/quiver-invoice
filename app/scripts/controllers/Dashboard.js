@@ -17,18 +17,17 @@ angular.module('quiverInvoiceApp')
       });
     });
 
-    $scope.filteredInvoices = function (text) {
-      if (!$scope.user.invoices) {
+    $scope.filteredInvoices = function (text, invoices) {
+      if (!invoices) {
         return {};
       }
 
       if (!text) {
-        return $scope.user.invoices;
+        return invoices;
       }
 
       var text = text.toLowerCase(),
         regex = new RegExp(text, 'i'),
-        invoices = $scope.user.invoices,
         keys = Object.keys(invoices),
         i = keys.length,
         result = {},
@@ -74,28 +73,30 @@ angular.module('quiverInvoiceApp')
       return result;
     };
 
+    var parseTags = function (ref, tags) {
+      var tagsArray = (tags) ? tags.split(",") : [],
+        i = tagsArray.length;
+
+      while (i--) {
+        tagsArray[i] = tagsArray[i].trim();
+      }
+
+      if (ref.details) {
+        ref.details.tags = tagsArray;
+      } else {
+        console.log('details not found', ref, tagsArray);
+      }
+      return ref;
+    };
+
     $scope.saveTags = function (id, tags) {
       invoiceService.get(id).then(function (invoice) {
         var deferred = $q.defer();
 
         invoice.$on('loaded', function () {
-          var tagsArray = (tags) ? tags.split(",") : [],
-            i = tagsArray.length;
-
-          while (i--) {
-            tagsArray[i] = tagsArray[i].trim();
-          }
-
-          if (invoice.details) {
-            invoice.details.tags = tagsArray;
-          } else {
-            console.log('details not found', invoice, tagsArray);
-          }
-
+          parseTags(invoice, tags);
           invoice.$save().then(deferred.resolve, deferred.reject);
         });
-
-
 
         return deferred.promise;
       }).then(function () {
@@ -105,12 +106,29 @@ angular.module('quiverInvoiceApp')
       });
     };
 
+    $scope.savePaymentTags = function (id, tags) {
+      invoiceService.getPayments(id).then(function (invoice) {
+        var deferred = $q.defer();
+
+        invoice.$on('loaded', function () {
+          parseTags(invoice, tags);
+          invoice.$save().then(deferred.resolve, deferred.reject);
+        });
+
+        return deferred.promise;
+      }).then(function () {
+          notificationService.success('Invoice', 'Changes saved');
+        }, function (err) {
+          notificationService.error('Invoice', err);
+        });
+    };
+
     $scope.setFilterText = function (text) {
       $scope.invoiceFilterText = text;
     };
 
-    $scope.$on('tagsInput', function () {
-      console.log('tagsInput changed', this, arguments);
-    });
+    $scope.setPaymentText = function (text) {
+      $scope.paymentFilterText = text;
+    };
 
   });

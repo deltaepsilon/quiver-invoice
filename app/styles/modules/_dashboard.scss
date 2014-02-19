@@ -1,0 +1,11 @@
+.tag {
+  &:after {
+    content: ", ";
+  }
+
+  &:last-of-type {
+    &:after {
+      visibility: hidden;
+    }
+  }
+}
