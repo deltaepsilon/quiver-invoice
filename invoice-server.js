@@ -281,7 +281,7 @@ app.post('/payer/:payerId/user/:userId/invoice/:invoiceId/pay', function (req, r
       // Add to user's payments
       invoice.charge = charge;
       // Strip
-      invoice.tags = [];
+      invoice.details.tags = [];
       paymentsRef.push(_.omit(invoice, ['sk']));
     });
   });

@@ -101,10 +101,12 @@
 </div>
 
 <div class="centered" ng-show="user.payments">
-    <h2>Invoice Payments</h2>
+    <hr>
+
+    <h2>Payments</h2>
 
     <div class="input-icon-wrapper">
-        <input id="payment-filter-text" type="text" ng-model="paymentFilterText" placeholder="Filter payment invoices..." tabindex="20"/>
+        <input id="payment-filter-text" type="text" ng-model="paymentFilterText" placeholder="Filter payments..." tabindex="20"/>
         <button class="input-icon icon-button fi-x" ng-click="paymentFilterText = null" tabindex="20"></button>
     </div>
 
