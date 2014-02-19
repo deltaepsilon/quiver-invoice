@@ -417,4 +417,9 @@ module.exports = function (grunt) {
     'shell:tarDist',
     'shell:copyDist'
   ]);
+
+  grunt.registerTask('s3deploy', [
+    'build',
+    's3'
+  ]);
 };
