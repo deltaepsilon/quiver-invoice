@@ -226,12 +226,17 @@
             <div class="row">
                 <h2>Payment</h2>
 
-                <div class="small-6 column">
-                    <button class="button" ng-click="pay(invoice)" ng-disabled="!invoice.details.token || !invoice.details.total">Finalize Payment</button>
-                </div>
-                <div class="small-6 column">
-                    <div ng-hide="invoice.details.sender.pk">Invoice cannot be paid. Sender missing payment information.</div>
-                </div>
+                <form action="">
+                    <div class="row">
+                        <div class="small-6 column">
+                            <button class="button" ng-click="pay(invoice)" ng-disabled="!invoice.details.token || !invoice.details.total">Finalize Payment</button>
+                        </div>
+                        <div class="small-6 column">
+                            <div ng-hide="invoice.details.sender.pk">Invoice cannot be paid. Sender missing payment information.</div>
+                        </div>
+                    </div>
+                </form>
+
 
             </div>
         </div>
