@@ -11,7 +11,20 @@
     </div>
 </div>
 
-<div ng-show="user">
+<div ng-show="user && !invoice.details.number">
+    <h1 class="padded-row text-center">Invoice Email Mismatch</h1>
+
+    <div class="padded-row centered">
+        <h2>Your email does not match</h2>
+        <p>
+            You're only allowed to pay an invoice if you have an account with Quiver Invoice and that account has a
+            matching email address. So go <a ui-sref="login">login</a> or <a ui-sref="login">register</a> a new
+            account with the same email address to which your invoice notification email was sent.
+        </p>
+    </div>
+</div>
+
+<div ng-show="user && invoice.details.number">
     <h1 class="padded-row text-center">
         <span ng-show="invoice.charge">Review Invoice</span>
         <span ng-hide="invoice.charge">Pay Invoice</span>
