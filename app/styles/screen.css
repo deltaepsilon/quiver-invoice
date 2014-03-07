@@ -6518,6 +6518,11 @@ a, .link {
   display: inline;
 }
 
+/* line 135, modules/_global.scss */
+.inline-block {
+  display: inline-block;
+}
+
 /* line 1, modules/_nav.scss */
 .top-bar {
   margin-bottom: 2em;
@@ -6717,6 +6722,11 @@ a, .link {
 /* line 131, modules/_global.scss */
 .inline {
   display: inline;
+}
+
+/* line 135, modules/_global.scss */
+.inline-block {
+  display: inline-block;
 }
 
 /* line 84, modules/_data-table.scss */

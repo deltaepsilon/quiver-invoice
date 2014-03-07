@@ -70,13 +70,13 @@
                     <li class="row" ng-repeat="(noteId, note) in invoice.details.notes">
                         <!--<strong class="left">{{ note.date | date }}</strong>-->
 
-                        <div class="small-1 column">
+                        <span class="inline-block right small-1">
                             <button class="right icon-button fi-trash" ng-click="user.$child('invoices').$child(id).$child('details').$child('notes').$remove(noteId)"></button>
-                        </div>
-                        <div class="small-11 column">
-                            <div ng-model="note.text" contenteditable="true" ng-change="updateNote(id, noteId, note)"></div>
-                        </div>
-                        <br>
+                        </span>
+                        <span class="inline-block small-11" ng-model="note.text" contenteditable="true" ng-change="updateNote(id, noteId, note)"></span>
+
+                        <div><br></div>
+
                     </li>
                 </ul>
             </div>
