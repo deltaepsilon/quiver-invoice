@@ -284,6 +284,7 @@ app.post('/payer/:payerId/user/:userId/invoice/:invoiceId/pay', function (req, r
 
       invoice.charge = charge; // Add to user's payments
       invoice.details.tags = []; // Strip requestor's tags
+      invoice.details.notes = []; // Strip requestor's notes
 
       paymentsRef.auth(firebaseSecret, function (err, result) {
         paymentsRef.push(_.omit(invoice, ['sk']));

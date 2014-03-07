@@ -46,7 +46,7 @@ angular.module('quiverInvoiceApp')
       create: function (user) {
         var deferred = $q.defer();
 
-        firebaseSimpleLogin.$createUser(user.email, user.password).then(function (user) {
+        return firebaseSimpleLogin.$createUser(user.email, user.password).then(function (user) {
           var userRef = $firebase(new Firebase(env.firebase + '/users/' + user.id));
           userRef.email = user.email;
           userRef.$save().then(deferred.resolve, deferred.reject);

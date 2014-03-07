@@ -60,6 +60,28 @@
             </div>
 
             <div class="row">
+                <div class="column small-2">
+                    <span class="pointer" ng-click="addNote(id)">
+                        <button class="icon-button fi-plus" tabindex="10"></button>
+                        <span>Notes:</span>
+                    </span>
+                </div>
+                <ul class="column small-10">
+                    <li class="row" ng-repeat="(noteId, note) in invoice.details.notes">
+                        <!--<strong class="left">{{ note.date | date }}</strong>-->
+
+                        <div class="small-1 column">
+                            <button class="right icon-button fi-trash" ng-click="user.$child('invoices').$child(id).$child('details').$child('notes').$remove(noteId)"></button>
+                        </div>
+                        <div class="small-11 column">
+                            <div ng-model="note.text" contenteditable="true" ng-change="updateNote(id, noteId, note)"></div>
+                        </div>
+                        <br>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row">
                 <div class="column small-10">
                     <label for="tags-input" class="inline pointer" ng-click="toggleTagsInput(tagsInputShow, invoice.details.tags)">
                         <button class="icon-button fi-plus" ng-hide="tagsInputShow" tabindex="10"></button>
