@@ -24,7 +24,14 @@ angular.module('quiverInvoiceApp')
         }
         element.on('blur', function() {
           return scope.$apply(function() {
-            return ctrl.$setViewValue(element.text());
+            var value = element.attr('value');
+
+            if (value) {
+              return ctrl.$setViewValue(value);
+            } else {
+              return ctrl.$setViewValue(element.text());
+            }
+
           });
         });
         ctrl.$render = function() {

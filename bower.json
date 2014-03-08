@@ -15,7 +15,8 @@
     "angularfire": "~0.6.0",
     "firebase": "~1.0.2",
     "angular": "~1.2.9",
-    "angular-notifications": "https://github.com/deltaepsilon/angular-notifications.git#master"
+    "angular-notifications": "https://github.com/deltaepsilon/angular-notifications.git#master",
+    "angular-markdown-editable": "git@github.com:deltaepsilon/angular-markdown-editable.git"
   },
   "devDependencies": {
     "angular-scenario": "~1.0.7",

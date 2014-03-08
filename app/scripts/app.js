@@ -9,7 +9,8 @@ angular.module('quiverInvoiceApp', [
   'angular-google-analytics',
   'jmdobry.angular-cache',
   'firebase',
-  'notifications'
+  'notifications',
+  'angular-markdown-editable'
 ])
   .run(function (cacheService, $state, $rootScope, _) {
 //    cacheService.config(restangularProvider);

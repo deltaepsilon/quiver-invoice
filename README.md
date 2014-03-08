@@ -56,6 +56,7 @@ export MANDRILL_API_KEY="R0MU6eaPxOdobC1W_kFNhw"
 ```
 
 
+- Run ```node invoice-server.js```, ```nodemon invoice-server.js``` or ```forever invoice-server.js``` to get the Express server up and running. This is necessary to handle Stripe and email transactions. Nodemon is great for development. Forever is used for production.
 - Run ```grunt server``` to launch a development instance of the application. Otherwise, run ```grunt build``` to build, ```grunt s3deploy``` to build and deploy to Amazon S3, or ```grunt deploy``` to tar the necessary files and scp them up to your server via your scp target.
 - ```grunt deploy``` runs a hand-rolled bash deploy script. It relies on a server directory structure similar to the following:
 

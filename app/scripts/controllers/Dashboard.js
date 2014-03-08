@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('quiverInvoiceApp')
-  .controller('DashboardCtrl', function ($scope, $rootScope, $q, _, notificationService, invoiceService, stripeService, userService, moment) {
+  .controller('DashboardCtrl', function ($scope, $rootScope, $q, _, notificationService, invoiceService, stripeService, userService, moment, $timeout) {
     $scope.percentComplete = 1;
 
     $scope.isTest = stripeService.isTest;
@@ -152,9 +152,11 @@ angular.module('quiverInvoiceApp')
     };
 
     $scope.updateNote = function (invoiceId, noteId, note) {
-      userService.getRef().then(function (userRef) {
-        note.date = moment().format("YYYY-MM-DD");
-        userRef.$child('invoices').$child(invoiceId).$child('details').$child('notes').$child(noteId).$set(note);
+      $timeout(function () {
+        userService.getRef().then(function (userRef) {
+          note.date = moment().format("YYYY-MM-DD");
+          userRef.$child('invoices').$child(invoiceId).$child('details').$child('notes').$child(noteId).$set(note);
+        });
       });
 
     };
