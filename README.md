@@ -2,7 +2,7 @@ quiver-invoice
 ==============
 
 ## Installation
-- You'd best go get [Node/NPM](https://github.com/joyent/node) and (Bower)[http://bower.io/] if you haven't already.
+- You'd best go get [Node/NPM](https://github.com/joyent/node) and [Bower](http://bower.io/) if you haven't already.
 - Run ```npm install``` and ```bower install``` to download all dependencies.
 - Create a [firebase](http://www.firebase.com).
 - Log into your firebase and enable Simple Login with Email & Password.
