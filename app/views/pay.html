@@ -266,7 +266,7 @@
 
                 <div class="small-4 column">
                     <label for="charge-amount">Amount</label>
-                    <span id="charge-amount">{{ invoice.charge.amount | currency }}</span>
+                    <span id="charge-amount">{{ invoice.charge.amount / 100 | currency }}</span>
                 </div>
 
                 <div class="small-4 column">

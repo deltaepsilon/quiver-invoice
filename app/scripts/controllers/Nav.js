@@ -7,6 +7,10 @@ angular.module('quiverInvoiceApp')
     $rootScope.user = user;
     $rootScope.loggedInUser = loggedInUser;
 
+//    $rootScope.user.$on('loaded', function (snapshot) {
+//      console.log(snapshot);
+//    });
+
     if ($rootScope.user && $state.current.name === 'root') {
       $state.go('dashboard');
     } else if (!user && ~protectedRoutes.indexOf($state.current.name)) {
